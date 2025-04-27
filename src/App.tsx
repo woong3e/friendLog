@@ -6,7 +6,7 @@ import './index.css';
 
 function App() {
   return (
-    <div className="">
+    <div className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
       <Header />
       <Main />
       <Footer />
