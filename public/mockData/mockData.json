@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "샘플 제목 1",
+    "contents": "샘플 내용 1",
+    "url": "/images/sample1.jpeg",
+    "alt": "샘플 이미지 1"
+  },
+  {
+    "id": 2,
+    "title": "샘플 제목 2",
+    "contents": "샘플 내용 2",
+    "url": "/images/sample2.jpeg",
+    "alt": "샘플 이미지 2"
+  },
+  {
+    "id": 3,
+    "title": "샘플 제목 3",
+    "contents": "샘플 내용 3",
+    "url": "/images/sample3.jpeg",
+    "alt": "샘플 이미지 3"
+  }
+]
