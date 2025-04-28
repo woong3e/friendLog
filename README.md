@@ -1,54 +1,24 @@
-# React + TypeScript + Vite
+## 📄 요구사항 정의서
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### ✅ 페이지 및 라우트 구성
 
-Currently, two official plugins are available:
+| 경로 (Path)   | 컴포넌트 (Component) | 설명 (Description)                      |
+| :------------ | :------------------- | :-------------------------------------- |
+| `/`           | `Main`               | 메인 페이지(등록 글 리스트 페이지)      |
+| `/about`      | `About`              | 서비스 소개 페이지                      |
+| `/register`   | `Register`           | 컨텐츠등록 페이지(글,사진)              |
+| `/detail/:id` | `Detail`             | 상세 페이지 (동적 라우팅, `id` 값 기반) |
+| `/rank`       | `Rank`               | 랭크 페이지                             |
+| `/signUp`     | `SignUp`             | 회원가입 페이지                         |
+| `/login`      | `Login`              | 로그인 페이지                           |
+| `*`           | `NotFoundPage`       | 존재하지 않는 경로 접근 시 404 페이지   |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### ✅ 상세 사항
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- / 메인페이지 접근 시 분기처리 필요하고, 로그인/회원가입 페이지로 유도한다. 메인페이지는 권한이 있어야 사용 가능.
+- /about about 페이지에는 이 웹사이트에 대한 설명이 필요하다.
+- /register 컨텐츠등록 페이지에서는 제목,사진,내용을 등록한다. 컨텐츠등록 페이지는 권한이 있어야 사용 가능
+- /detail 디테일 페이지는 컨텐츠를 볼 수 있는 페이지, 컨텐츠 등록자를 제외한 나머지 인원들이 컨텐츠를 평가하고 컨텐츠에 평균점수가 부여된다.
+- /login, /signUp 로그인/회원가입에서는 자체로그인/회원가입과 소셜로그인/회원가입 기능 나누어서 개발한다.
+- /rank 랭크 페이지에서는 평가된 컨텐츠를 평가 점수가 높은 것부터 내림차순으로 정렬한다.
+- 존재하지 않는 경로 접근 시 404페이지 및 메인페이지로 유도
