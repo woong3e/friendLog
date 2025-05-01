@@ -1,26 +1,25 @@
 import Card from '../components/Card';
 import { useState, useEffect } from 'react';
+import supabase from '../utils/supabase';
+
 const Main = () => {
-  const [images, setImages] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const fetchMockData = async () => {
-      try {
-        const response = await fetch('/mockData/mockData.json');
-        const data = await response.json();
-        setImages(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchMockData();
+    fetchPosts();
   }, []);
 
+  async function fetchPosts() {
+    const { data, error } = await supabase.from('posts').select();
+    if (error) console.error('Error fetching posts:', error);
+    else setPosts(data);
+  }
+
   return (
-    <main className="mx-2 flex flex-col md:flex-row justify-start flex-wrap gap-2">
-      <Card />
-      <Card />
-      <Card />
+    <main className="flex flex-col flex-wrap justify-center h-full gap-3 mx-2 md:flex-row">
+      <Card posts={posts} />
+      <Card posts={posts} />
+      <Card posts={posts} />
     </main>
   );
 };
