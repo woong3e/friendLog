@@ -2,14 +2,14 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
   return (
     <div className="relative flex w-1/3 ml-2">
       <button onClick={toggleHamburgerMenu}>
-        {/* hamburger menu icon */}
+        {/* hamburgerMenu icon */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="none"
+          fill="currentColor"
           viewBox="0 0 24 24"
-          strokeWidth="1.5"
+          strokeWidth="2.0"
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 hover:cursor-pointer text-gray-900 dark:text-white"
         >
           <path
             strokeLinecap="round"
@@ -21,7 +21,7 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
 
       {isHamburgerMenuOpen && (
         <div
-          className="absolute left-0 z-50 w-full bg-white rounded-lg shadow-md top-10 dark:bg-gray-800"
+          className="absolute left-0 z-50 w-full bg-gray-100 rounded-lg shadow-md top-10 dark:bg-gray-800"
           id="navbar-hamburger"
         >
           <ul className="flex flex-col p-2 font-medium">
@@ -35,7 +35,7 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
             </li>
             <li>
               <a
-                href="/register"
+                href="/test"
                 className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 등록하기
@@ -55,4 +55,5 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
     </div>
   );
 };
+
 export default HamburgerMenu;

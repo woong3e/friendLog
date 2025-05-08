@@ -21,7 +21,7 @@ const PostRegister = () => {
       .single();
 
     if (error) {
-      console.error('Error Messange: ', error);
+      console.error('Error Message: ', error);
     } else {
       setPostList((prev) => [...prev, data]);
       setForm({ title: '', content: '' });
@@ -86,7 +86,6 @@ const PostRegister = () => {
           required
           onChange={handleChange}
         />
-        {/* drop zone */}
         <div className="flex items-center justify-center w-full md:w-1/2">
           <label
             htmlFor="dropzone-file"
