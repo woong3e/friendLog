@@ -1,18 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useThemeStore } from '../stores/useThemeStore';
 
-const Darkmode = () => {
-  const [isDark, setIsDark] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      if (saved) return saved === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-
-  const themeColorMeta = document.querySelector('#theme-color-meta');
+const DarkMode = () => {
+  const isDark = useThemeStore((state) => state.isDark);
+  const setDark = useThemeStore((state) => state.setDark);
+  const toggleDark = useThemeStore((state) => state.toggleDark);
 
   useEffect(() => {
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      setDark(theme === 'dark');
+    } else {
+      setDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+  }, []);
+
+  useEffect(() => {
+    const themeColorMeta = document.querySelector('#theme-color-meta');
     if (isDark) {
       document.documentElement.setAttribute('data-theme', 'dark');
       localStorage.setItem('theme', 'dark');
@@ -30,7 +34,7 @@ const Darkmode = () => {
 
   return (
     <>
-      <button onClick={() => setIsDark((prev) => !prev)}>
+      <button className="hover:cursor-default" onClick={toggleDark}>
         {isDark ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +42,7 @@ const Darkmode = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="w-6 h-6"
+            className="w-6 h-6 hover:cursor-pointer text-white"
           >
             <path
               strokeLinecap="round"
@@ -53,7 +57,7 @@ const Darkmode = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="w-6 h-6"
+            className="w-6 h-6 hover:cursor-pointer text-gray-900 "
           >
             <path
               strokeLinecap="round"
@@ -66,4 +70,5 @@ const Darkmode = () => {
     </>
   );
 };
-export default Darkmode;
+
+export default DarkMode;
