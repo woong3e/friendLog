@@ -16,7 +16,8 @@ const Main = () => {
   }
 
   return (
-    <main className="flex flex-col flex-wrap justify-center h-full gap-3 mx-2 md:flex-row">
+    <main className="flex flex-col flex-wrap justify-items-start h-full gap-3 mx-2 md:flex-row">
+      <Card posts={posts} />
       <Card posts={posts} />
       <Card posts={posts} />
       <Card posts={posts} />

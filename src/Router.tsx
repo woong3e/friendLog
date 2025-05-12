@@ -21,7 +21,7 @@ export default function Router() {
         <Route path="/login" element={<Login />} />
         <Route path="/signUp" element={<SignUp />} />
         <Route path="*" element={<NotFoundPage />} />
-        <Route path="/test" element={<ToastEditor />} />
+        <Route path="/editor" element={<ToastEditor />} />
         <Route path="/viewer" element={<ToastViewer />} />
       </Route>
     </Routes>
