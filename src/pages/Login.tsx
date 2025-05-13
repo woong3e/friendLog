@@ -1,4 +1,27 @@
+import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { useMutation } from '@tanstack/react-query';
+import { data } from 'react-router-dom';
+import supabase from '../utils/supabase';
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (data) {
+        console.log(data);
+      }
+      if (error) {
+        alert(error.message);
+      }
+    },
+  });
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -69,6 +92,10 @@ const Login = () => {
               <button
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                onClick={() => {
+                  loginMutation.mutate();
+                }}
+                disabled={loginMutation.isPending}
               >
                 Sign in
               </button>
