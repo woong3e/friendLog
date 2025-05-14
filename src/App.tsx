@@ -1,10 +1,11 @@
 import Router from './Router';
+import ReactQueryProvider from './config/ReactQueryProvider';
 
 function App() {
   return (
-    <div>
+    <ReactQueryProvider>
       <Router />
-    </div>
+    </ReactQueryProvider>
   );
 }
 

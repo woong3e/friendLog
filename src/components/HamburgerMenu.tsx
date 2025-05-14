@@ -49,6 +49,14 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
                 About
               </a>
             </li>
+            <li>
+              <a
+                href="/login"
+                className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              >
+                Login
+              </a>
+            </li>
           </ul>
         </div>
       )}
