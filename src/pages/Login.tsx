@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
-import { data } from 'react-router-dom';
 import supabase from '../utils/supabase';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +11,9 @@ const Login = () => {
       const { data, error } = supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          emailRedirectTo: 'http://localhost:5173/otp',
+        },
       });
 
       if (data) {

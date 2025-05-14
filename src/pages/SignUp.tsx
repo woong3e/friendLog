@@ -1,4 +1,23 @@
+import { useState } from 'react';
+import supabase from '../utils/supabase';
+import { useMutation } from '@tanstack/react-query';
 const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [otpConfirm, setOtpConfirm] = useState(false);
+
+  const signupMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: 'http://localhost:5173/otp',
+        },
+      });
+    },
+  });
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -22,6 +41,7 @@ const SignUp = () => {
                   Your email
                 </label>
                 <input
+                  onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   name="email"
                   id="email"
@@ -38,6 +58,7 @@ const SignUp = () => {
                   Password
                 </label>
                 <input
+                  onChange={(e) => setPassword(e.target.value)}
                   type="password"
                   name="password"
                   id="password"
@@ -54,6 +75,7 @@ const SignUp = () => {
                   Confirm password
                 </label>
                 <input
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   type="confirm-password"
                   name="confirm-password"
                   id="confirm-password"
