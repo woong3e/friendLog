@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="flex flex-col justify-end m-1 h-14 mx-1 md:h-14 bg-white rounded-lg shadow-sm dark:bg-gray-900">
+    <footer className="flex justify-center">
       <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
         <a href="https://github.com/woong3e/friendLog" className="">
           friendlog
