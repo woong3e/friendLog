@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import supabase from '../utils/supabase';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [otpConfirm, setOtpConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const signupMutation = useMutation({
     mutationFn: async () => {
@@ -13,13 +15,24 @@ const SignUp = () => {
         email,
         password,
         options: {
-          emailRedirectTo: 'http://localhost:5173/otp',
+          emailRedirectTo:
+            'http://localhost:5173/signup/otp?email=' +
+            encodeURIComponent(email),
         },
       });
+
+      if (data) {
+        navigate('/signup/otp?email=' + encodeURIComponent(email));
+      }
+
+      if (error) {
+        console.log(error.message);
+      }
     },
   });
+
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
+    <section className="">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"
@@ -30,15 +43,21 @@ const SignUp = () => {
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Create an account
+              계정 생성하기
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form
+              className="space-y-4 md:space-y-6"
+              onSubmit={(e) => {
+                e.preventDefault();
+                signupMutation.mutate();
+              }}
+            >
               <div>
                 <label
                   htmlFor="email"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Your email
+                  이메일
                 </label>
                 <input
                   onChange={(e) => setEmail(e.target.value)}
@@ -55,7 +74,7 @@ const SignUp = () => {
                   htmlFor="password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Password
+                  비밀번호
                 </label>
                 <input
                   onChange={(e) => setPassword(e.target.value)}
@@ -72,11 +91,11 @@ const SignUp = () => {
                   htmlFor="confirm-password"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Confirm password
+                  비밀번호 확인
                 </label>
                 <input
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  type="confirm-password"
+                  type="password"
                   name="confirm-password"
                   id="confirm-password"
                   placeholder="••••••••"
@@ -113,15 +132,15 @@ const SignUp = () => {
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Create an account
+                계정 생성하기
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{' '}
+                이미 계정이 있습니까?{' '}
                 <a
                   href="/login"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                 >
-                  Login here
+                  로그인하기
                 </a>
               </p>
             </form>

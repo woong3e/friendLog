@@ -21,8 +21,8 @@ export default function Router() {
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/register" element={<PostRegister />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signUp" element={<SignUp />} />
-        <Route path="/otp" element={<OtpInput />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup/otp" element={<OtpInput />} />
         <Route path="/test" element={<ToastEditor />} />
         <Route path="/editor" element={<ToastEditor />} />
         <Route path="/viewer" element={<ToastViewer />} />

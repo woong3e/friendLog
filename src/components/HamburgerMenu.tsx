@@ -9,7 +9,7 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
           viewBox="0 0 24 24"
           strokeWidth="2.0"
           stroke="currentColor"
-          className="w-6 h-6 hover:cursor-pointer text-gray-900 dark:text-white"
+          className="w-6 h-6 text-gray-900 hover:cursor-pointer dark:text-white"
         >
           <path
             strokeLinecap="round"
@@ -47,14 +47,6 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
                 className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 About
-              </a>
-            </li>
-            <li>
-              <a
-                href="/login"
-                className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                Login
               </a>
             </li>
           </ul>
