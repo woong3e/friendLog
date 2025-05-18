@@ -15,14 +15,12 @@ const SignUp = () => {
         email,
         password,
         options: {
-          emailRedirectTo:
-            'http://localhost:5173/signup/otp?email=' +
-            encodeURIComponent(email),
+          emailRedirectTo: `http://localhost:5173/signup/otp?email=${email}`,
         },
       });
 
       if (data) {
-        navigate('/signup/otp?email=' + encodeURIComponent(email));
+        navigate(`/signup/otp?email=${email}`);
       }
 
       if (error) {
