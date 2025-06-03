@@ -5,13 +5,14 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createCookieSessionStorage, useNavigate } from 'react-router-dom';
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '../styles/toast-editor-dark.css';
 import { useThemeStore } from '../stores/useThemeStore';
 import { Link } from 'react-router-dom';
 import supabase from '../utils/supabase';
+import { useMutation } from '@tanstack/react-query';
 
 const ToastEditor = forwardRef((props, ref) => {
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
@@ -28,6 +29,7 @@ const ToastEditor = forwardRef((props, ref) => {
     getInstance: () => editorRef.current,
   }));
 
+  //다크모드 상태 변화에 의한 에디터의 내용을 유지
   useEffect(() => {
     if (editorRef.current) {
       editorContentRef.current = editorRef.current.getMarkdown();
@@ -51,10 +53,9 @@ const ToastEditor = forwardRef((props, ref) => {
           ['heading', 'bold', 'italic', 'strike', 'hr', 'quote', 'image'],
         ],
         hooks: {
-          addImageBlobHook: handleImageUpload,
+          addImageBlobHook: onUploadImage,
         },
       });
-      console.log(editorRef.current.options);
     }
   }, [isDark]);
 
@@ -79,12 +80,7 @@ const ToastEditor = forwardRef((props, ref) => {
     }
   };
 
-  const handleImageUpload = async (
-    blob: Blob,
-    callback: (url: string, alt: string) => void
-  ) => {
-    const ext = blob.type.split('/')[1];
-    const fileName = `${Date.now()}.${ext}`;
+  const uploadImage = async (blob: Blob, fileName: string) => {
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(fileName, blob, {
@@ -93,14 +89,52 @@ const ToastEditor = forwardRef((props, ref) => {
       });
     if (error) {
       console.error('Error Message: ', error);
-      return;
+      return null;
     }
-    const { data: publicUrlData } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName);
-    const publicUrl = publicUrlData.publicUrl;
+    return fileName;
+  };
+
+  const getImageUrl = (filePath: string) => {
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
+  const onUploadImage = async (
+    blob: Blob,
+    callback: (url: string, alt: string) => void
+  ) => {
+    const ext = blob.type.split('/')[1];
+    const fileName = `${Date.now()}.${ext}`;
+    const uploadedFileName = await uploadImage(blob, fileName);
+    if (!uploadedFileName) return;
+    const publicUrl = getImageUrl(uploadedFileName);
     setPublicUrlArr((prev) => [...prev, publicUrl]);
     callback(publicUrl, fileName);
+  };
+
+  const updateEditorContent = (newContent: string) => {
+    const currentContent = editorRef?.current?.getMarkdown();
+
+    editorRef?.current?.setMarkdown(`${currentContent}\n${newContent}`);
+  };
+
+  const onDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const files = Array.from(event.dataTransfer.files);
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        await new Promise<void>((resolve, reject) => {
+          onUploadImage(file, (url, alt) => {
+            console.log('업로드완료', url);
+            const markdownImageLink = `![${file.name}](${url})`;
+            updateEditorContent(markdownImageLink);
+            resolve();
+          });
+        });
+      }
+    }
   };
 
   return (
@@ -114,7 +148,7 @@ const ToastEditor = forwardRef((props, ref) => {
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
-      <div ref={divRef}></div>
+      <div ref={divRef} onDropCapture={onDrop}></div>
       <div className="flex justify-between w-full my-3">
         <Link
           to={'/'}

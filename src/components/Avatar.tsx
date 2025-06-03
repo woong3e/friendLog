@@ -8,7 +8,7 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
     clearSession();
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   };
 
