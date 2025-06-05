@@ -18,15 +18,13 @@ export default function Router() {
         <Route path="/" element={<Main />} />
         <Route path="*" element={<NotFoundPage />} />
         <Route path="/about" element={<About />} />
-        <Route path="/detail/:id" element={<Detail />} />
         <Route path="/register" element={<PostRegister />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signup/otp" element={<OtpInput />} />
-        <Route path="/test" element={<ToastEditor />} />
         <Route path="/editor" element={<ToastEditor />} />
-        <Route path="/viewer" element={<ToastViewer />} />
+        <Route path="/posts/:id" element={<ToastViewer />} />
       </Route>
-    </Routes>
+    </Routes> 
   );
 }
