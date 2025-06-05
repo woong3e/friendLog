@@ -16,3 +16,31 @@
     color: #111827;
   }
 }
+
+@media only screen and (max-width: 480px) {
+  .toastui-editor-popup.toastui-editor-popup-add-image {
+    margin-left: 0 !important; /* 또는 원하는 값 */
+  }
+  ,
+  .toastui-editor-toolbar-icons {
+    position: relative;
+  }
+
+  .toastui-editor-tooltip {
+    left: 78% !important;
+    top: 4% !important;
+    transform: translate(0, -50%) !important;
+    z-index: 9999 !important;
+  }
+
+  .toastui-editor-tooltip .arrow {
+    left: -5px !important;
+    top: 50% !important;
+    transform: translateY(-50%) rotate(45deg) !important;
+    background-color: #444;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    z-index: -1;
+  }
+}
