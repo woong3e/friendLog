@@ -1,6 +1,7 @@
 import Card from '../components/Card';
 import { useState, useEffect } from 'react';
 import supabase from '../utils/supabase';
+import { Link } from 'react-router-dom';
 
 const Main = () => {
   const [posts, setPosts] = useState([]);
@@ -17,10 +18,11 @@ const Main = () => {
 
   return (
     <main className="flex flex-wrap h-auto gap-5">
-      <Card posts={posts} />
-      <Card posts={posts} />
-      <Card posts={posts} />
-      <Card posts={posts} />
+      {posts.map((post) => (
+        <Link key={post.id} to={`posts/${post.id}`}>
+          <Card post={post} />
+        </Link>
+      ))}
     </main>
   );
 };
