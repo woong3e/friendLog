@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import HamburgerMenu from './HamburgerMenu';
-import DarkMode from './DarkMode';
+import DarkMode from './Darkmode';
 import Avatar from './Avatar';
 import { useAuthStore } from '../stores/useAuthStore';
+import { useOutsideClick } from '../hooks/useOnClickOutside';
 
 const Header = () => {
   const session = useAuthStore((state) => state.session);
@@ -20,10 +21,26 @@ const Header = () => {
     setIsAvatarMenuOpen((prev) => !prev);
   };
 
+  const avatarMenuRef = useRef<HTMLDivElement>(null);
+  const hamburgerMenuRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(avatarMenuRef, () => {
+    if (isAvatarMenuOpen) {
+      setIsAvatarMenuOpen(false);
+    }
+  });
+
+  useOutsideClick(hamburgerMenuRef, () => {
+    if (isHamburgerMenuOpen) {
+      setIsHamburgerMenuOpen(false);
+    }
+  });
+
   return (
-    <nav className="flex items-center justify-between mx-1 bg-white h-14 dark:bg-gray-900">
+    <header className="flex items-center justify-between mx-1 bg-white h-14 dark:bg-gray-900">
       <HamburgerMenu
         isHamburgerMenuOpen={isHamburgerMenuOpen}
+        setIsHamburgerMenuOpen={setIsHamburgerMenuOpen}
         toggleHamburgerMenu={toggleHamburgerMenu}
       />
       <Link
@@ -33,7 +50,7 @@ const Header = () => {
         <span className="hover:cursor-pointer">FriendLog</span>
       </Link>
       <div className="flex items-center justify-end w-1/3 mr-2">
-        <div className="flex items-center mr-2">
+        <div className="flex items-center mr-2" ref={avatarMenuRef}>
           {session ? (
             <Avatar
               isAvatarMenuOpen={isAvatarMenuOpen}
@@ -47,7 +64,7 @@ const Header = () => {
           <DarkMode />
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

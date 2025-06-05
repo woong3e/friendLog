@@ -34,7 +34,7 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
 
       {isAvatarMenuOpen && (
         <div
-          className="absolute right-0 z-50 w-48 bg-gray-100 rounded-lg shadow-md top-10 dark:bg-gray-800"
+          className="absolute right-0 z-50 w-24 bg-gray-100 rounded-lg shadow-md top-10 dark:bg-gray-800"
           id="navbar-avatar"
         >
           <ul className="flex flex-col p-2 font-medium ">

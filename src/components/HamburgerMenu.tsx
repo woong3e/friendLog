@@ -1,6 +1,20 @@
-const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
+import { useOutsideClick } from '../hooks/useOnClickOutside';
+import { useRef } from 'react';
+const HamburgerMenu = ({
+  isHamburgerMenuOpen,
+  setIsHamburgerMenuOpen,
+  toggleHamburgerMenu,
+}) => {
+  const hamburgerMenuRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(hamburgerMenuRef, () => {
+    if (isHamburgerMenuOpen) {
+      setIsHamburgerMenuOpen(false);
+    }
+  });
+
   return (
-    <div className="relative flex w-1/3 ml-2">
+    <div className="relative flex w-1/3 ml-2" ref={hamburgerMenuRef}>
       <button onClick={toggleHamburgerMenu}>
         {/* hamburgerMenu icon */}
         <svg
@@ -28,14 +42,14 @@ const HamburgerMenu = ({ isHamburgerMenuOpen, toggleHamburgerMenu }) => {
             <li>
               <a
                 href="/"
-                className="block w-full px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="block w-full px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white "
               >
                 홈으로
               </a>
             </li>
             <li>
               <a
-                href="/test"
+                href="/editor"
                 className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 등록하기
