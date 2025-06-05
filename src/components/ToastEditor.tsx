@@ -50,7 +50,10 @@ const ToastEditor = forwardRef((props, ref) => {
         initialValue: editorContentRef.current,
         initialEditType: 'wysiwyg',
         toolbarItems: [
-          ['heading', 'bold', 'italic', 'strike', 'hr', 'quote', 'image'],
+          ['heading', 'bold', 'italic', 'strike'],
+          ['hr', 'quote'],
+          ['ul', 'ol', 'task'],
+          ['image'],
         ],
         hooks: {
           addImageBlobHook: onUploadImage,
