@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import dayjs from 'dayjs';
 
 const Card = ({ post }) => {
   useEffect(() => {
@@ -7,24 +8,25 @@ const Card = ({ post }) => {
 
   const imageArray = JSON.parse(post.image_url || '[]');
   const imageUrl = imageArray[0];
+  console.log(post.created_at);
 
   return (
-    <article className="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow-sm md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-      <img
-        className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
-        src={imageUrl}
-        alt=""
-      />
-      <div className="flex flex-col justify-between p-4 leading-normal">
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+    <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+      <img className="rounded-t-lg w-full h-47" src={imageUrl} alt="" />
+      <div className="p-5">
+        <h5 className="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate">
           {post.title}
         </h5>
-        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-          Here are the biggest enterprise technology acquisitions of 2021 so
-          far, in reverse chronological order.
+        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-5 min-h-25">
+          {post.content}
         </p>
+        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">
+          {dayjs(post.created_at).format('YYYY-MM-DD HH:mm:ss')}
+        </p>
+        <div className="border-t border-gray-200 my-1"></div>
+        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">by {}</p>
       </div>
-    </article>
+    </div>
   );
 };
 export default Card;
