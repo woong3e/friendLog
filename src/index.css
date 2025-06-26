@@ -1,6 +1,17 @@
 @import 'tailwindcss';
 @charset "utf-8";
 
+body {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  body {
+    width: 768px;
+    margin: 0 auto;
+  }
+}
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @media (prefers-color-scheme: dark) {
@@ -18,7 +29,9 @@
 }
 
 @media only screen and (max-width: 480px) {
-  .toastui-editor-popup.toastui-editor-popup-add-image {
+  .toastui-editor-popup.toastui-editor-popup-add-image,
+  .toastui-editor-popup.toastui-editor-popup-add-link,
+  .toastui-editor-popup.toastui-editor-popup-add-table {
     margin-left: 0 !important; /* 또는 원하는 값 */
   }
   ,
@@ -42,5 +55,31 @@
     height: 10px;
     position: absolute;
     z-index: -1;
+  }
+}
+
+@theme {
+  --animate-slideup: slideup 1s ease-in-out;
+  @keyframes slideup {
+    0% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+  }
+
+  --animate-slidedown: slidedown 1s ease-in-out;
+  @keyframes slidedown {
+    0% {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
   }
 }
