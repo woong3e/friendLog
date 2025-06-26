@@ -17,7 +17,7 @@ const Main = () => {
   }
 
   return (
-    <main className="flex flex-wrap h-auto gap-5">
+    <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
       {posts.map((post) => (
         <Link key={post.id} to={`posts/${post.id}`}>
           <Card post={post} />

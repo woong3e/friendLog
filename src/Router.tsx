@@ -15,16 +15,16 @@ export default function Router() {
   return (
     <Routes>
       <Route element={<HasHeaderFooter />}>
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<Main />}  />
         <Route path="*" element={<NotFoundPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/register" element={<PostRegister />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signup/otp" element={<OtpInput />} />
-        <Route path="/editor" element={<ToastEditor />} />
+        <Route path="/editor" element={<ToastEditor />} /> 
         <Route path="/posts/:id" element={<ToastViewer />} />
       </Route>
-    </Routes> 
+    </Routes>
   );
 }

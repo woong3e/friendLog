@@ -4,11 +4,10 @@ import Footer from './components/Footer';
 
 const HasHeaderFooter = () => {
   return (
-    <>
+    <div className="h-dvh">
       <Header />
       <Outlet />
-      <Footer />
-    </>
+    </div>
   );
 };
 

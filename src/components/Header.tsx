@@ -37,7 +37,7 @@ const Header = () => {
   });
 
   return (
-    <header className="flex items-center justify-between mx-1 bg-white h-14 dark:bg-gray-900">
+    <header className="flex items-center justify-between mx-1 bg-white dark:bg-gray-900 h-1/12">
       <HamburgerMenu
         isHamburgerMenuOpen={isHamburgerMenuOpen}
         setIsHamburgerMenuOpen={setIsHamburgerMenuOpen}
