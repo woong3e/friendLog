@@ -2,6 +2,7 @@ import Card from '../components/Card';
 import { useState, useEffect } from 'react';
 import supabase from '../utils/supabase';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const Main = () => {
   const [posts, setPosts] = useState([]);
@@ -16,6 +17,8 @@ const Main = () => {
     else setPosts(data);
   }
 
+  const session = useAuthStore((state) => state.session);
+  console.log(session);
   return (
     <main className="flex flex-wrap h-auto gap-5">
       {posts.map((post) => (
