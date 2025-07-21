@@ -14,21 +14,31 @@ import { Link } from 'react-router-dom';
 import supabase from '../utils/supabase';
 import { useAuthStore } from '../stores/useAuthStore';
 import PostPreviewModal from './PostPreviewModal';
+import { usePostStore } from '../stores/usePostStore';
 
 const ToastEditor = forwardRef((props, ref) => {
+  const navigate = useNavigate();
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const divRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<Editor | null>(null);
-  const [title, setTitle] = useState('');
   const editorContentRef = useRef('');
   const isDark = useThemeStore((state) => state.isDark);
-  const content = editorRef.current?.getMarkdown();
-  const navigate = useNavigate();
   const [publicUrlArr, setPublicUrlArr] = useState<string[]>([]);
   const session = useAuthStore((state) => state.session);
   // console.log(session);
   const [visible, setVisible] = useState<boolean>(false);
   const handleModalOpen = () => setVisible(true);
+
+  const {
+    title,
+    content,
+    imageUrlArr,
+    userId,
+    setTitle,
+    setContent,
+    setImageUrlArr,
+    setContentSummary,
+  } = usePostStore();
 
   useImperativeHandle(ref, () => ({
     getInstance: () => editorRef.current,
@@ -66,12 +76,6 @@ const ToastEditor = forwardRef((props, ref) => {
       });
     }
   }, [isDark]);
-
-  const payload = {
-    title: title,
-    content: content,
-    image_url: publicUrlArr,
-  };
 
   const handlePublish = async () => {
     const content = editorRef.current?.getMarkdown();
@@ -127,8 +131,9 @@ const ToastEditor = forwardRef((props, ref) => {
     const uploadedFileName = await uploadImage(blob, fileName);
     if (!uploadedFileName) return;
     const publicUrl = getImageUrl(uploadedFileName);
-    setPublicUrlArr((prev) => [...prev, publicUrl]);
+    setImageUrlArr([...imageUrlArr, publicUrl]);
     callback(publicUrl, fileName);
+    console.log(imageUrlArr);
   };
 
   const updateEditorContent = (newContent: string) => {
@@ -154,6 +159,11 @@ const ToastEditor = forwardRef((props, ref) => {
         });
       }
     }
+  };
+
+  const handleEditorChange = () => {
+    setContent(editorRef.current?.getMarkdown());
+    console.log(content);
   };
 
   return (
@@ -187,6 +197,7 @@ const ToastEditor = forwardRef((props, ref) => {
             <button
               onClick={() => {
                 setVisible(true);
+                handleEditorChange();
               }}
               type="button"
               className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
