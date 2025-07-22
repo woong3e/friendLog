@@ -11,6 +11,7 @@ interface PostState {
   setContent: (content: string) => void;
   setImageUrlArr: (imageUrlArr: string[]) => void;
   setThumbnailUrl: (thumbnail: string) => void;
+  setUserId: (userId: string) => void;
   setContentSummary: (content_description: string) => void;
 }
 
@@ -26,5 +27,6 @@ export const usePostStore = create<PostState>((set) => ({
   setImageUrlArr: (publicUrl) =>
     set((state) => ({ imageUrlArr: [...state.imageUrlArr, ...publicUrl] })),
   setThumbnailUrl: (thumbnailUrl) => set({ thumbnailUrl }),
+  setUserId: (userId) => set({ userId }),
   setContentSummary: (contentSummary) => set({ contentSummary }),
 }));
