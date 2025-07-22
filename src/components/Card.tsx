@@ -11,7 +11,11 @@ const Card = ({ post }) => {
 
   return (
     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      <img className="w-full rounded-t-lg h-47" src={imageUrl} alt="" />
+      <img
+        className="w-full rounded-t-lg h-47"
+        src={post.thumbnail_url}
+        alt=""
+      />
       <div className="p-5">
         <h5 className="mb-2 text-lg font-bold tracking-tight text-gray-900 truncate dark:text-white">
           {post.title}
@@ -23,7 +27,9 @@ const Card = ({ post }) => {
           {dayjs(post.created_at).format('YYYY-MM-DD HH:mm:ss')}
         </p>
         <div className="my-1 border-t border-gray-200"></div>
-        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">by {}</p>
+        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">
+          by {post.nickname}
+        </p>
       </div>
     </div>
   );

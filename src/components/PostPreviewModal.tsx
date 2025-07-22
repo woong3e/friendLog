@@ -8,12 +8,14 @@ import { useState, useEffect } from 'react';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePostStore } from '../stores/usePostStore';
+import { useAuthStore } from '../stores/useAuthStore';
 import supabase from '../utils/supabase';
 
 import { useNavigate } from 'react-router-dom';
 
 const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
+  const session = useAuthStore((state) => state.session);
   const navigate = useNavigate();
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const {
@@ -87,6 +89,7 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
     image_url: imageUrlArr,
     thumbnail_url: thumbnailUrl,
     content_summary: contentSummary,
+    nickname: session?.user.email?.split('@')[0],
   };
 
   const handlePublish = async () => {
