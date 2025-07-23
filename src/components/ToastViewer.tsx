@@ -48,8 +48,8 @@ const ToastViewer = () => {
 
   return (
     <>
-      <div className="flex flex-col">
-        <h1 className="flex justi">
+      <div className="flex flex-col mx-auto my-0 md:w-3xl">
+        <h1 className="flex">
           <p className="text-4xl font-bold">{post.title}</p>
         </h1>
         <div ref={divRef}></div>

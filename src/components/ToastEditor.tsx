@@ -168,7 +168,7 @@ const ToastEditor = forwardRef((props, ref) => {
 
   return (
     <div>
-      <div className="h-full">
+      <div className="mx-auto my-0 md:w-3xl h-full">
         <div className="flex justify-center">
           <input
             className="p-1 text-3xl font-bold text-gray-900 bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:text-white"
