@@ -2,7 +2,6 @@ import Card from '../components/Card';
 import { useState, useEffect } from 'react';
 import supabase from '../utils/supabase';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '../stores/useAuthStore';
 
 const Main = () => {
   const [posts, setPosts] = useState([]);
@@ -17,12 +16,14 @@ const Main = () => {
     else setPosts(data);
   }
 
-  const session = useAuthStore((state) => state.session);
-  console.log(session);
   return (
-    <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+    <main className="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 w-full p-4">
       {posts.map((post) => (
-        <Link key={post.id} to={`posts/${post.id}`}>
+        <Link
+          key={post.id}
+          to={`posts/${post.id}`}
+          className="block w-full h-full"
+        >
           <Card post={post} />
         </Link>
       ))}
