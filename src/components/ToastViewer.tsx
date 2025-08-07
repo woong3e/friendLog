@@ -1,4 +1,5 @@
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
+import '../styles/custom-toast-editor-dark.css';
 import { useEffect, useRef, useState } from 'react';
 import { useThemeStore } from '../stores/useThemeStore';
 import supabase from '../utils/supabase';
@@ -24,7 +25,6 @@ const ToastViewer = () => {
       }
       if (data) {
         setPost(data);
-        console.log(post);
       }
     };
     getPosts();
@@ -32,6 +32,7 @@ const ToastViewer = () => {
 
   useEffect(() => {
     if (divRef.current && post) {
+      divRef.current.classList.remove('toastui-editor-dark');
       if (viewerRef.current) {
         viewerRef.current.destroy();
       }
@@ -48,7 +49,7 @@ const ToastViewer = () => {
 
   return (
     <>
-      <div className="flex flex-col mx-auto my-0 md:w-3xl">
+      <div className="flex flex-col px-2 mx-auto my-0 md:w-3xl">
         <h1 className="flex">
           <p className="text-4xl font-bold">{post.title}</p>
         </h1>

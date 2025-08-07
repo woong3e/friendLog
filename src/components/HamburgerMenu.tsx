@@ -23,7 +23,7 @@ const HamburgerMenu = ({
           viewBox="0 0 24 24"
           strokeWidth="2.0"
           stroke="currentColor"
-          className="w-6 h-6 text-gray-900 hover:cursor-pointer dark:text-white"
+          className="w-6 h-6  hover:cursor-pointer "
         >
           <path
             strokeLinecap="round"
@@ -42,7 +42,7 @@ const HamburgerMenu = ({
             <li>
               <a
                 href="/"
-                className="block w-full px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white "
+                className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover: "
               >
                 홈으로
               </a>
@@ -50,7 +50,7 @@ const HamburgerMenu = ({
             <li>
               <a
                 href="/editor"
-                className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="block px-3 py-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:"
               >
                 등록하기
               </a>
@@ -58,7 +58,7 @@ const HamburgerMenu = ({
             <li>
               <a
                 href="/about"
-                className="block px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="block px-3 py-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:"
               >
                 About
               </a>

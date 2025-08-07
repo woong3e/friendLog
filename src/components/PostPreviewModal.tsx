@@ -129,8 +129,8 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
         <div className="flex flex-col items-center justify-center w-full p-1 m-1 bg-blue-900 h-2/3">
           {thumbnailUrl && (
             <div className="flex justify-end w-full gap-5">
-              <button className="text-gray-500 cursor-pointer">재업로드</button>
-              <button className="text-gray-500 cursor-pointer">제거</button>
+              <button className="cursor-pointer">재업로드</button>
+              <button className="cursor-pointer">제거</button>
             </div>
           )}
           {thumbnailUrl ? (
@@ -178,14 +178,14 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
         <div className="flex items-end justify-end w-full">
           <button
             type="button"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
+            className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
             onClick={handleClose}
           >
             취소
           </button>
           <button
             type="button"
-            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            className="focus:outline-none  bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             onClick={handlePublish}
           >
             출간하기

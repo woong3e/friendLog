@@ -22,7 +22,7 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6 text-gray-900 hover:cursor-pointer dark:text-white"
+          className="w-6 h-6 hover:cursor-pointer"
         >
           <path
             fillRule="evenodd"
@@ -41,13 +41,13 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
             <li>
               <button
                 onClick={signOut}
-                className="block w-full px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="block w-full px-3 py-2  rounded-sm hover:bg-gray-100  dark:hover:bg-gray-700 "
               >
                 로그아웃
               </button>
             </li>
             <li>
-              <button className="block w-full px-3 py-2 text-gray-900 rounded-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              <button className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100  dark:hover:bg-gray-700 ">
                 설정
               </button>
             </li>

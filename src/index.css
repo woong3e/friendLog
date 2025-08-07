@@ -1,31 +1,28 @@
 @import 'tailwindcss';
 @charset "utf-8";
 
-body {
-  margin: 0;
-}
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
-@media (prefers-color-scheme: dark) {
+@layer base {
+  html,
   body {
-    background: #111827;
-    color: #ffffff;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  body {
+    font-size: 16px;
+    margin: 0;
     background: #ffffff;
     color: #111827;
   }
+  [data-theme='dark'] html,
+  [data-theme='dark'] body {
+    background-color: #111827;
+    color: white;
+  }
 }
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @media only screen and (max-width: 480px) {
   .toastui-editor-popup.toastui-editor-popup-add-image,
   .toastui-editor-popup.toastui-editor-popup-add-link,
   .toastui-editor-popup.toastui-editor-popup-add-table {
-    margin-left: 0 !important; /* 또는 원하는 값 */
+    margin-left: 0 !important;
   }
   ,
   .toastui-editor-toolbar-icons {
@@ -48,6 +45,12 @@ body {
     height: 10px;
     position: absolute;
     z-index: -1;
+  }
+  .toastui-editor-popup.toastui-editor-popup-add-heading {
+    left: 38% !important;
+    top: 25% !important;
+    transform: translate(0, -50%) !important;
+    z-index: 9999 !important;
   }
 }
 

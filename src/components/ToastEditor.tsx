@@ -8,7 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Editor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import '../styles/toast-editor-dark.css';
+import '../styles/custom-toast-editor-dark.css';
 import { useThemeStore } from '../stores/useThemeStore';
 import { Link } from 'react-router-dom';
 import supabase from '../utils/supabase';
@@ -25,7 +25,6 @@ const ToastEditor = forwardRef((props, ref) => {
   const isDark = useThemeStore((state) => state.isDark);
   const [publicUrlArr, setPublicUrlArr] = useState<string[]>([]);
   const session = useAuthStore((state) => state.session);
-  // console.log(session);
   const [visible, setVisible] = useState<boolean>(false);
   const handleModalOpen = () => setVisible(true);
 
@@ -172,7 +171,7 @@ const ToastEditor = forwardRef((props, ref) => {
       <div className=" h-full">
         <div className="flex justify-center">
           <input
-            className="p-1 text-3xl font-bold text-gray-900 bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:text-white"
+            className="p-1 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:"
             placeholder="Please enter the title"
             value={title}
             type="text"
@@ -184,14 +183,14 @@ const ToastEditor = forwardRef((props, ref) => {
         <div className="flex justify-between w-full">
           <Link
             to={'/'}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
             나가기
           </Link>
           <div>
             <button
               type="button"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
+              className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
             >
               임시저장
             </button>
@@ -201,7 +200,7 @@ const ToastEditor = forwardRef((props, ref) => {
                 handleEditorChange();
               }}
               type="button"
-              className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              className="focus:outline-none  bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             >
               출간하기
             </button>
