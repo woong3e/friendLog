@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
     <footer className="flex justify-center">
-      <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
+      <span className="block text-sm sm:text-center">
         <a href="https://github.com/woong3e/friendLog" className="">
           friendlog
         </a>

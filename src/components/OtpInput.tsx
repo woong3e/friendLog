@@ -89,13 +89,13 @@ const OtpInput = () => {
               value={otpArr[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               onPaste={handlePaste}
-              className="block py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg w-9 h-9 md:w-30 md:h-30 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 md:text-2xl"
+              className="block py-3 text-sm font-extrabold text-center bg-white border border-gray-300 rounded-lg w-9 h-9 md:w-30 md:h-30 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600  dark:focus:ring-primary-500 dark:focus:border-primary-500 md:text-2xl"
               required
             />
           </div>
         ))}
       </div>
-      <p className="flex justify-center w-full mt-2 text-sm gray-500 text: md:text-3xl mb-50 dark:text-gray-400">
+      <p className="flex justify-center w-full mt-2 text-sm gray-500 text: md:text-3xl mb-50">
         메일로 발송된 인증문자 6자리를 입력해주세요
       </p>
     </form>

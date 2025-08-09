@@ -1,11 +1,6 @@
-import { useEffect } from 'react';
 import dayjs from 'dayjs';
 
 const Card = ({ post }) => {
-  useEffect(() => {
-    console.log(post);
-  }, []);
-
   const imageArray = JSON.parse(post.image_url || '[]');
   const imageUrl = imageArray[0];
 
@@ -17,22 +12,18 @@ const Card = ({ post }) => {
         alt=""
       />
       <div className="p-5">
-        <h5 className="mb-2 text-lg font-bold tracking-tight text-gray-900 truncate dark:text-white">
+        <h5 className="mb-2 text-lg font-bold tracking-tight truncate ">
           {post.title}
         </h5>
-        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-5 min-h-25">
+        <p className="mb-3 text-sm line-clamp-5 min-h-25">
           {post.content_summary}
         </p>
-        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">
+        <p className="mb-3 text-sm ">
           {dayjs(post.created_at).format('YYYY-MM-DD HH:mm:ss')}
         </p>
-        <div className="my-1 border-t border-gray-200"></div>
-        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">
-          by {post.nickname}
-        </p>
-        <p className="mb-3 text-sm text-gray-400 dark:text-gray-500">
-          rating:5.0
-        </p>
+        <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+        <p className="mb-3 text-sm">by {post.nickname}</p>
+        <p className="mb-3 text-sm">rating:5.0</p>
       </div>
     </div>
   );
