@@ -46,6 +46,7 @@
     position: absolute;
     z-index: -1;
   }
+
   .toastui-editor-popup.toastui-editor-popup-add-heading {
     left: 38% !important;
     top: 25% !important;
@@ -55,7 +56,7 @@
 }
 
 @theme {
-  --animate-slideup: slideup 1s ease-in-out;
+  --animate-slideup: slideup 1s ease-in-out forwards;
   @keyframes slideup {
     0% {
       transform: translateY(100%);
@@ -67,7 +68,7 @@
     }
   }
 
-  --animate-slidedown: slidedown 1s ease-in-out;
+  --animate-slidedown: slidedown 1s ease-in-out forwards;
   @keyframes slidedown {
     0% {
       transform: translateY(0%);
