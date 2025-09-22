@@ -59,7 +59,7 @@ const ToastEditor = forwardRef((props, ref) => {
         theme: isDark ? 'dark' : 'light',
         previewStyle: 'vertical',
         previewHighlight: false,
-        placeholder: 'Please enter the content',
+        placeholder: '내용을 입력하세요.',
         usageStatistics: false,
         initialValue: editorContentRef.current,
         initialEditType: 'markdown',
@@ -69,6 +69,7 @@ const ToastEditor = forwardRef((props, ref) => {
           ['hr', 'quote'],
           ['ul', 'ol', 'task'],
           ['table', 'link', 'image'],
+          ['scrollSync'],
         ],
         hooks: {
           addImageBlobHook: onUploadImage,
@@ -81,12 +82,12 @@ const ToastEditor = forwardRef((props, ref) => {
     const content = editorRef.current?.getMarkdown();
 
     if (title === '') {
-      alert('제목을 입력해주세요');
+      alert('제목을 입력하세요');
       return;
     }
 
     if (content === '') {
-      alert('내용을 입력해주세요');
+      alert('내용을 입력하세요');
       return;
     }
 
@@ -168,11 +169,11 @@ const ToastEditor = forwardRef((props, ref) => {
 
   return (
     <div>
-      <div className=" h-full">
+      <div className="h-full ">
         <div className="flex justify-center">
           <input
-            className="p-1 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:"
-            placeholder="Please enter the title"
+            className="p-1 pl-6 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:"
+            placeholder="제목을 입력하세요."
             value={title}
             type="text"
             onChange={(e) => setTitle(e.target.value)}
