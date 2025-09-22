@@ -7,6 +7,8 @@ const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
   auth: {
     storage: sessionStorage,
     storageKey: 'friendlog-token',
+    persistSession: true,
+    autoRefreshToken: true,
   },
 });
 
