@@ -168,11 +168,11 @@ const ToastEditor = forwardRef((props, ref) => {
   };
 
   return (
-    <div>
-      <div className="h-full ">
-        <div className="flex justify-center">
+    <>
+      <div className="h-[92vh]">
+        <div className="flex justify-center h-[7vh]">
           <input
-            className="p-1 pl-6 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:"
+            className="p-1 pl-6 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900"
             placeholder="제목을 입력하세요."
             value={title}
             type="text"
@@ -181,17 +181,19 @@ const ToastEditor = forwardRef((props, ref) => {
           />
         </div>
         <div ref={divRef} onDropCapture={onDrop}></div>
-        <div className="flex justify-between w-full">
-          <Link
-            to={'/'}
-            className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-          >
-            나가기
-          </Link>
-          <div>
+        <div className="flex items-end">
+          <div className="flex justify-between w-full h-[5vh]">
+            <button
+              onClick={() => {
+                navigate('/');
+              }}
+              className="bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
+            >
+              나가기
+            </button>
             <button
               type="button"
-              className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
+              className="bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
             >
               임시저장
             </button>
@@ -211,7 +213,7 @@ const ToastEditor = forwardRef((props, ref) => {
       {visible && (
         <PostPreviewModal visible={visible} setVisible={setVisible} />
       )}
-    </div>
+    </>
   );
 });
 

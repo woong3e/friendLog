@@ -13,9 +13,6 @@ const CommentSection = () => {
         .from('ratings')
         .select('comment')
         .eq('post_id', post_id);
-      // console.log(data[1].user_id);
-      // console.log(data[1].comment);
-      console.log(data);
       setComment(data);
     };
     fetchRating();

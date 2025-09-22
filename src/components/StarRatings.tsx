@@ -23,7 +23,6 @@ const StarRatings = () => {
         const avgRating =
           data.reduce((acc, cur) => acc + cur.rating, 0) / data.length;
         setAvg(avgRating);
-        console.log(data);
       } else {
         setAvg(null);
       }
