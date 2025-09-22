@@ -12,6 +12,11 @@ import { useParams } from 'react-router-dom';
 import FAB from './FAB';
 import StarRatings from './StarRatings';
 import CommentSection from './CommentSection';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
 
 const ToastViewer = () => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -34,6 +39,7 @@ const ToastViewer = () => {
       }
       if (data) {
         setPost(data);
+        console.log(data);
       }
     };
     getPosts();
@@ -58,10 +64,21 @@ const ToastViewer = () => {
 
   return (
     <>
-      <div className="flex flex-col px-2 mx-auto my-0 md:w-3xl">
-        <h1 className="flex">
-          <p className="text-4xl font-bold">{post.title}</p>
-        </h1>
+      <div className="flex flex-col px-2 mx-auto my-0 md:w-3xl min-h-screen">
+        <div>
+          <h1 className="flex">
+            <p className="text-4xl font-bold">{post.title}</p>
+          </h1>
+          <div className="flex justify-end gap-1">
+            <button className="text-gray-400 hover:text-green-500">수정</button>
+            <button className="text-gray-400 hover:text-red-600">삭제</button>
+          </div>
+          <div className="flex gap-1">
+            <p>{post.nickname}</p>
+            <p>·</p>
+            <p>{dayjs(post.created_at).fromNow()}</p>
+          </div>
+        </div>
         <div ref={divRef} className="flex justify-around"></div>
         <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700" />
         <StarRatings />
