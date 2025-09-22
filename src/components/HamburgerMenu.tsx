@@ -14,7 +14,7 @@ const HamburgerMenu = ({
   });
 
   return (
-    <div className="relative flex w-1/3 ml-2" ref={hamburgerMenuRef}>
+    <div className="relative flex w-1/3 ml-2 h-full" ref={hamburgerMenuRef}>
       <button onClick={toggleHamburgerMenu}>
         {/* hamburgerMenu icon */}
         <svg
@@ -23,7 +23,7 @@ const HamburgerMenu = ({
           viewBox="0 0 24 24"
           strokeWidth="2.0"
           stroke="currentColor"
-          className="w-6 h-6  hover:cursor-pointer "
+          className="w-10 h-10  hover:cursor-pointer "
         >
           <path
             strokeLinecap="round"
@@ -35,7 +35,7 @@ const HamburgerMenu = ({
 
       {isHamburgerMenuOpen && (
         <div
-          className="absolute left-0 z-50 w-full bg-gray-100 rounded-lg shadow-md top-10 dark:bg-gray-800"
+          className="absolute left-0 z-50 w-full bg-gray-100 rounded-lg shadow-md top-15 dark:bg-gray-800"
           id="navbar-hamburger"
         >
           <ul className="flex flex-col p-2 font-medium">

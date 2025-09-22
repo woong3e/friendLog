@@ -118,7 +118,7 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
 
   return createPortal(
     <main
-      className={`fixed top-0 left-0 w-full h-full z-1000 dark:bg-blue-950 flex justify-center
+      className={`fixed top-0 left-0 w-full h-dvh z-1000 dark:bg-blue-950 flex justify-center overflow-hidden
         ${visible && !isClosing ? 'animate-slideup' : ''}
         ${isClosing ? 'animate-slidedown' : ''}
         `}
@@ -126,7 +126,7 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
     >
       <section className="flex flex-col items-center justify-center w-full bg-blue-950">
         <h1 className="text-2xl font-bold">포스트 미리보기</h1>
-        <div className="flex flex-col items-center justify-center w-full p-1 m-1 bg-blue-900 h-2/3">
+        <div className="flex flex-col items-center justify-center w-full p-1 m-1 bg-blue-950 h-2/3">
           {thumbnailUrl && (
             <div className="flex justify-end w-full gap-5">
               <button className="cursor-pointer">재업로드</button>
@@ -144,7 +144,7 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
               {...getRootProps()}
             >
               <input {...getInputProps()} />
-              <figure className="flex flex-col items-center justify-center w-full h-full">
+              <figure className="flex flex-col items-center justify-center w-full h-full hover:cursor-pointer bg-blue-800">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -162,7 +162,10 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
                 {isDragActive ? (
                   <p>사진을 놓아주세요.</p>
                 ) : (
-                  <p>썸네일 사진을 드래그&드랍 or 클릭해서 선택하세요.</p>
+                  <p>
+                    썸네일 이미지를 업로드해주세요.
+                    
+                  </p>
                 )}
               </figure>
             </div>
@@ -185,7 +188,7 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
           </button>
           <button
             type="button"
-            className="focus:outline-none  bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            className="focus:outline-none bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             onClick={handlePublish}
           >
             출간하기
