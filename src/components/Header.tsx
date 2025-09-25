@@ -57,7 +57,7 @@ const Header = () => {
               toggleAvatarMenu={toggleAvatarMenu}
             />
           ) : (
-            <div className="text-xl">
+            <div className="text-xl font-extrabold h-6">
               <Link to={'/login'}>로그인</Link>
             </div>
           )}
