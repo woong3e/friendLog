@@ -2,12 +2,19 @@ import supabase from '../utils/supabase';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMetaStore } from '../stores/useMetaStore';
 
 const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
-  const session = useAuthStore((state) => state.session);
-  const [avatarImageUrl, setAvatarImageUrl] = useState('');
   const navigate = useNavigate();
+  const {
+    userMeta,
+    avatarImageUrl,
+    editedNickname,
+    setUserMeta,
+    setAvatarImageUrl,
+    setEditedNickname,
+  } = useMetaStore();
 
   useEffect(() => {
     (async () => {
@@ -15,6 +22,13 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
       setAvatarImageUrl(user?.user_metadata.avatarImageUrl);
     })();
   }, []);
+
+  const fetchUserMeta = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user;
+  };
 
   const clearSession = useAuthStore((state) => state.clearSession);
 
@@ -26,13 +40,6 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
     } else {
       navigate('/');
     }
-  };
-
-  const fetchUserMeta = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return user;
   };
 
   return (
@@ -56,13 +63,13 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               className="w-10 h-10"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="m19.5 8.25-7.5 7.5-7.5-7.5"
               />
             </svg>
@@ -85,22 +92,22 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
 
       {isAvatarMenuOpen && (
         <div
-          className="absolute -right-9 z-50 w-24 bg-gray-100 rounded-lg shadow-md top-10 dark:bg-gray-800"
+          className="absolute -right-11 z-50 w-30 bg-gray-300  rounded-lg shadow-md top-15 dark:bg-gray-700"
           id="navbar-avatar"
         >
           <ul className="flex flex-col p-2 font-medium ">
             <li>
-              <button
+              <a
                 onClick={signOut}
-                className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100  dark:hover:bg-gray-700 "
+                className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100  dark:hover:bg-gray-600 cursor-pointer"
               >
                 로그아웃
-              </button>
+              </a>
             </li>
             <li>
               <a
                 href={'/settings'}
-                className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100  dark:hover:bg-gray-700 "
+                className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100  dark:hover:bg-gray-600"
               >
                 설정
               </a>

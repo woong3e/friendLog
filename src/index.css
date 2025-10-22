@@ -53,6 +53,12 @@
     transform: translate(0, -50%) !important;
     z-index: 9999 !important;
   }
+  .toastui-editor-dropdown-toolbar {
+    right: 0px !important;
+  }
+  .toastui-editor-defaultUI-toolbar button {
+    margin: 7px 0px;
+  }
 }
 
 @theme {
@@ -80,3 +86,8 @@
     }
   }
 }
+
+.ProseMirror {
+  font-size: 16px;
+}
+//Editor에서 줌인 방지를 위해 default font-size를 16px 이상으로 설정.

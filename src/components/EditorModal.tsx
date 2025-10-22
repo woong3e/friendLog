@@ -1,4 +1,4 @@
-interface PostPreviewModalProps {
+interface EditorModalProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -10,10 +10,9 @@ import { useDropzone } from 'react-dropzone';
 import { usePostStore } from '../stores/usePostStore';
 import { useAuthStore } from '../stores/useAuthStore';
 import supabase from '../utils/supabase';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import { useNavigate } from 'react-router-dom';
-
-const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
+const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
   const session = useAuthStore((state) => state.session);
   const navigate = useNavigate();
@@ -23,11 +22,15 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
     content,
     imageUrlArr,
     thumbnailUrl,
-    userId,
     contentSummary,
+    nickname,
+    isEdit,
     setThumbnailUrl,
     setContentSummary,
   } = usePostStore();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get('id');
 
   useEffect(() => {
     if (visible) {
@@ -69,8 +72,11 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
   };
 
   const getThumbnailUrl = (filePath: string) => {
-    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    const { data, error } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
     setThumbnailUrl(data.publicUrl);
+
     return data.publicUrl;
   };
 
@@ -89,10 +95,10 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
     image_url: imageUrlArr,
     thumbnail_url: thumbnailUrl,
     content_summary: contentSummary,
-    nickname: session?.user.email?.split('@')[0],
+    nickname: nickname,
   };
 
-  const handlePublish = async () => {
+  const handlePostPublish = async () => {
     if (title === '') {
       alert('제목을 입력해주세요');
       return;
@@ -116,6 +122,30 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
     }
   };
 
+  const handlePostUpdate = async () => {
+    if (title === '') {
+      alert('제목을 입력해주세요');
+      return;
+    }
+
+    if (content === '') {
+      alert('내용을 입력해주세요');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('posts')
+      .update([postData])
+      .eq('id', Number(id));
+
+    if (error) {
+      console.error('Error Message: ', error);
+    } else {
+      console.log(data);
+      navigate('/');
+    }
+  };
+
   return createPortal(
     <main
       className={`fixed top-0 left-0 w-full h-dvh z-1000 dark:bg-blue-950 flex justify-center overflow-hidden
@@ -129,8 +159,22 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
         <div className="flex flex-col items-center justify-center w-full p-1 m-1 bg-blue-950 h-2/3">
           {thumbnailUrl && (
             <div className="flex justify-end w-full gap-5">
-              <button className="cursor-pointer">재업로드</button>
-              <button className="cursor-pointer">제거</button>
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  console.log('재업로드');
+                }}
+              >
+                재업로드
+              </button>
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  console.log('제거');
+                }}
+              >
+                제거
+              </button>
             </div>
           )}
           {thumbnailUrl ? (
@@ -146,26 +190,34 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
               <input {...getInputProps()} />
               <figure className="flex flex-col items-center justify-center w-full h-full hover:cursor-pointer bg-blue-800">
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
                   viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-30 h-30"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-50 h-50"
                 >
-                  <path
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                  />
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <g id="Media / Image_01">
+                      <path
+                        id="Vector"
+                        d="M3.00005 17.0001C3 16.9355 3 16.8689 3 16.8002V7.2002C3 6.08009 3 5.51962 3.21799 5.0918C3.40973 4.71547 3.71547 4.40973 4.0918 4.21799C4.51962 4 5.08009 4 6.2002 4H17.8002C18.9203 4 19.4801 4 19.9079 4.21799C20.2842 4.40973 20.5905 4.71547 20.7822 5.0918C21 5.5192 21 6.07899 21 7.19691V16.8031C21 17.2881 21 17.6679 20.9822 17.9774M3.00005 17.0001C3.00082 17.9884 3.01337 18.5058 3.21799 18.9074C3.40973 19.2837 3.71547 19.5905 4.0918 19.7822C4.5192 20 5.07899 20 6.19691 20H17.8036C18.9215 20 19.4805 20 19.9079 19.7822C20.2842 19.5905 20.5905 19.2837 20.7822 18.9074C20.9055 18.6654 20.959 18.3813 20.9822 17.9774M3.00005 17.0001L7.76798 11.4375L7.76939 11.436C8.19227 10.9426 8.40406 10.6955 8.65527 10.6064C8.87594 10.5282 9.11686 10.53 9.33643 10.6113C9.58664 10.704 9.79506 10.9539 10.2119 11.4541L12.8831 14.6595C13.269 15.1226 13.463 15.3554 13.6986 15.4489C13.9065 15.5313 14.1357 15.5406 14.3501 15.4773C14.5942 15.4053 14.8091 15.1904 15.2388 14.7607L15.7358 14.2637C16.1733 13.8262 16.3921 13.6076 16.6397 13.5361C16.8571 13.4734 17.0896 13.4869 17.2988 13.5732C17.537 13.6716 17.7302 13.9124 18.1167 14.3955L20.9822 17.9774M20.9822 17.9774L21 17.9996M15 10C14.4477 10 14 9.55228 14 9C14 8.44772 14.4477 8 15 8C15.5523 8 16 8.44772 16 9C16 9.55228 15.5523 10 15 10Z"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                    </g>
+                  </g>
                 </svg>
                 {isDragActive ? (
                   <p>사진을 놓아주세요.</p>
                 ) : (
-                  <p>
-                    썸네일 이미지를 업로드해주세요.
-                    
-                  </p>
+                  <p>썸네일 이미지를 업로드해주세요.</p>
                 )}
               </figure>
             </div>
@@ -176,6 +228,7 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
             className="w-full px-4 py-3 mt-10 text-sm bg-blue-900 outline-none resize-none h-30 placeholder:text-center"
             placeholder="당신의 컨텐츠를 짧게 소개해보세요."
             onChange={handleContentSummary}
+            value={isEdit ? contentSummary : ''}
           ></textarea>
         </p>
         <div className="flex items-end justify-end w-full">
@@ -186,13 +239,23 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
           >
             취소
           </button>
-          <button
-            type="button"
-            className="focus:outline-none bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-            onClick={handlePublish}
-          >
-            출간하기
-          </button>
+          {!id ? (
+            <button
+              type="button"
+              className="focus:outline-none bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              onClick={handlePostPublish}
+            >
+              출간하기
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="focus:outline-none bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              onClick={handlePostUpdate}
+            >
+              수정하기
+            </button>
+          )}
         </div>
       </section>
     </main>,
@@ -200,4 +263,4 @@ const PostPreviewModal = ({ visible, setVisible }: PostPreviewModalProps) => {
   );
 };
 
-export default PostPreviewModal;
+export default EditorModal;

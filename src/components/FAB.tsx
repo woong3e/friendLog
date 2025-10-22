@@ -1,6 +1,7 @@
 import ReviewModal from './ReviewModal';
-
+import { useState } from 'react';
 const FAB = ({ visible, setVisible }: ReviewModal) => {
+  const [isClosing, setIsClosing] = useState<boolean>(false);
   return (
     <div
       className="fixed z-30 bottom-1 right-1 hover:cursor-pointer hover:animate-spin mr-1 mb-1"
@@ -37,7 +38,14 @@ const FAB = ({ visible, setVisible }: ReviewModal) => {
           />
         </g>
       </svg>
-      {visible && <ReviewModal visible={visible} setVisible={setVisible} />}
+      {visible && (
+        <ReviewModal
+          visible={visible}
+          setVisible={setVisible}
+          isClosing={isClosing}
+          setIsClosing={setIsClosing}
+        />
+      )}
     </div>
   );
 };

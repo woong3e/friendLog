@@ -37,7 +37,7 @@ const Header = () => {
   });
 
   return (
-    <header className="flex items-center justify-between mx-1 bg-white dark:bg-gray-900 h-20">
+    <header className="flex mx-1 mt-1 bg-white dark:bg-gray-900 h-1/18 justify-between">
       <HamburgerMenu
         isHamburgerMenuOpen={isHamburgerMenuOpen}
         setIsHamburgerMenuOpen={setIsHamburgerMenuOpen}
@@ -45,11 +45,11 @@ const Header = () => {
       />
       <Link
         to="/"
-        className="flex items-center justify-center w-1/3 text-xl hover:cursor-default h-full"
+        className="flex justify-center items-center text-xl hover:cursor-default h-full"
       >
-        <p className="hover:cursor-pointer text-2xl">FriendLog</p>
+        <p className="hover:cursor-pointer text-2xl ml-15">FriendLog</p>
       </Link>
-      <div className="flex items-center justify-end w-1/3 mr-2 h-full">
+      <div className="flex mr-2 h-full justify-end">
         <div className="flex items-center mr-2" ref={avatarMenuRef}>
           {session ? (
             <Avatar
@@ -57,7 +57,7 @@ const Header = () => {
               toggleAvatarMenu={toggleAvatarMenu}
             />
           ) : (
-            <div className="text-xl">
+            <div className="text-xl font-extrabold h-6">
               <Link to={'/login'}>로그인</Link>
             </div>
           )}

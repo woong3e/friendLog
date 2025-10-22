@@ -1,3 +1,6 @@
+import EditorModal from './EditorModal';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import Editor from '@toast-ui/editor';
 import {
   useEffect,
   useRef,
@@ -5,16 +8,11 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Editor from '@toast-ui/editor';
-import '@toast-ui/editor/dist/toastui-editor.css';
 import '../styles/custom-toast-editor-dark.css';
-import { useThemeStore } from '../stores/useThemeStore';
-import { Link } from 'react-router-dom';
 import supabase from '../utils/supabase';
-import { useAuthStore } from '../stores/useAuthStore';
-import PostPreviewModal from './PostPreviewModal';
+import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
+import { useNavigate } from 'react-router-dom';
 
 const ToastEditor = forwardRef((props, ref) => {
   const navigate = useNavigate();
@@ -23,21 +21,27 @@ const ToastEditor = forwardRef((props, ref) => {
   const editorRef = useRef<Editor | null>(null);
   const editorContentRef = useRef('');
   const isDark = useThemeStore((state) => state.isDark);
-  const [publicUrlArr, setPublicUrlArr] = useState<string[]>([]);
-  const session = useAuthStore((state) => state.session);
   const [visible, setVisible] = useState<boolean>(false);
-  const handleModalOpen = () => setVisible(true);
 
   const {
     title,
     content,
     imageUrlArr,
-    userId,
+    isEdit,
     setTitle,
     setContent,
     setImageUrlArr,
-    setContentSummary,
   } = usePostStore();
+
+  useEffect(() => {
+    if (isEdit) {
+      setTitle(title);
+      editorRef?.current?.setMarkdown(content);
+    } else {
+      setTitle('');
+      setContent('');
+    }
+  }, [isEdit]);
 
   useImperativeHandle(ref, () => ({
     getInstance: () => editorRef.current,
@@ -55,7 +59,7 @@ const ToastEditor = forwardRef((props, ref) => {
     if (divRef.current) {
       editorRef.current = new Editor({
         el: divRef.current,
-        height: '80vh',
+        height: '100%',
         theme: isDark ? 'dark' : 'light',
         previewStyle: 'vertical',
         previewHighlight: false,
@@ -68,7 +72,14 @@ const ToastEditor = forwardRef((props, ref) => {
           ['heading', 'bold', 'italic', 'strike'],
           ['hr', 'quote'],
           ['ul', 'ol', 'task'],
-          ['table', 'link', 'image'],
+          [
+            'table',
+            'link',
+            {
+              el: UploadImagesBtn(),
+              tooltip: '이미지 업로드하기',
+            },
+          ],
           ['scrollSync'],
         ],
         hooks: {
@@ -78,30 +89,37 @@ const ToastEditor = forwardRef((props, ref) => {
     }
   }, [isDark]);
 
-  const handlePublish = async () => {
-    const content = editorRef.current?.getMarkdown();
+  const UploadImagesBtn = () => {
+    const fileInput = document.createElement('input');
+    const uploadBtn = document.createElement('button');
 
-    if (title === '') {
-      alert('제목을 입력하세요');
-      return;
-    }
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', async function (event) {
+      const files = event.target?.files;
+      for (const file of files) {
+        if (file.type.startsWith('image/')) {
+          await new Promise<void>((resolve, reject) => {
+            onUploadImage(file, (url, alt) => {
+              console.log('업로드완료', url);
+              const markdownImageLink = `![${file.name}](${url})`;
+              updateEditorContent(markdownImageLink);
+              resolve();
+            });
+          });
+        }
+      }
+    });
 
-    if (content === '') {
-      alert('내용을 입력하세요');
-      return;
-    }
+    uploadBtn.className = 'image toastui-editor-toolbar-icons';
+    uploadBtn.style.position = 'relative';
+    uploadBtn.style.bottom = '7px';
+    uploadBtn.addEventListener('click', function () {
+      fileInput.click();
+    });
 
-    const { data, error } = await supabase
-      .from('posts')
-      .insert([payload])
-      .single();
-
-    if (error) {
-      console.error('Error Message: ', error);
-    } else {
-      console.log(data);
-      navigate('/');
-    }
+    return uploadBtn;
   };
 
   const uploadImage = async (blob: Blob, fileName: string) => {
@@ -121,6 +139,25 @@ const ToastEditor = forwardRef((props, ref) => {
   const getImageUrl = (filePath: string) => {
     const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
     return data.publicUrl;
+  };
+
+  const onDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const files = Array.from(event.dataTransfer.files);
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        await new Promise<void>((resolve, reject) => {
+          onUploadImage(file, (url, alt) => {
+            console.log('업로드완료', url);
+            const markdownImageLink = `![${file.name}](${url})`;
+            updateEditorContent(markdownImageLink);
+            resolve();
+          });
+        });
+      }
+    }
   };
 
   const onUploadImage = async (
@@ -143,75 +180,71 @@ const ToastEditor = forwardRef((props, ref) => {
     editorRef?.current?.setMarkdown(`${currentContent}\n${newContent}`);
   };
 
-  const onDrop = async (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const files = Array.from(event.dataTransfer.files);
-    for (const file of files) {
-      if (file.type.startsWith('image/')) {
-        await new Promise<void>((resolve, reject) => {
-          onUploadImage(file, (url, alt) => {
-            console.log('업로드완료', url);
-            const markdownImageLink = `![${file.name}](${url})`;
-            updateEditorContent(markdownImageLink);
-            resolve();
-          });
-        });
-      }
-    }
-  };
-
   const handleEditorChange = () => {
     setContent(editorRef.current?.getMarkdown());
     console.log(content);
   };
 
   return (
-    <div>
-      <div className="h-full ">
-        <div className="flex justify-center">
-          <input
-            className="p-1 pl-6 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900 dark:"
-            placeholder="제목을 입력하세요."
-            value={title}
-            type="text"
-            onChange={(e) => setTitle(e.target.value)}
-            id="title"
-          />
-        </div>
+    <>
+      <div className="flex justify-center h-1/18">
+        <input
+          className="p-1 pl-6 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900"
+          placeholder="제목을 입력하세요."
+          type="text"
+          defaultValue={title ?? title}
+          onChange={(e) => setTitle(e.target.value)}
+          id="title"
+        />
+      </div>
+      <div className="h-15/18">
         <div ref={divRef} onDropCapture={onDrop}></div>
-        <div className="flex justify-between w-full">
-          <Link
-            to={'/'}
-            className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+      </div>
+      <div className="flex h-1/18">
+        <div className="flex w-full justify-between">
+          <button
+            onClick={() => {
+              navigate('/');
+            }}
+            className="bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
             나가기
-          </Link>
-          <div>
+          </button>
+          <div className="flex w-1/2 justify-end">
             <button
               type="button"
-              className=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
+              className="bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
             >
               임시저장
             </button>
-            <button
-              onClick={() => {
-                setVisible(true);
-                handleEditorChange();
-              }}
-              type="button"
-              className="focus:outline-none  bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-            >
-              출간하기
-            </button>
+            {!isEdit ? (
+              <button
+                onClick={() => {
+                  setVisible(true);
+                  handleEditorChange();
+                }}
+                type="button"
+                className="focus:outline-none  bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              >
+                출간하기
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setVisible(true);
+                  handleEditorChange();
+                }}
+                type="button"
+                className="focus:outline-none  bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              >
+                수정하기
+              </button>
+            )}
           </div>
         </div>
       </div>
-      {visible && (
-        <PostPreviewModal visible={visible} setVisible={setVisible} />
-      )}
-    </div>
+      {visible && <EditorModal visible={visible} setVisible={setVisible} />}
+    </>
   );
 });
 
