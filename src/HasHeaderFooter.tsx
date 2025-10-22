@@ -3,7 +3,7 @@ import Header from './components/Header';
 
 const HasHeaderFooter = () => {
   return (
-    <div className="min-h-screen">
+    <div className="h-svh">
       <Header />
       <Outlet />
     </div>

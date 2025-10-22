@@ -29,7 +29,7 @@ const Card = ({ post }) => {
         </p>
         <div className="flex justify-between items-end px-4 mb-1">
           <p className="text-sm">by {post.nickname}</p>
-          <p className="text-sm">rating:5.0</p>
+          <p className="text-sm">rating:{post.rating}</p>
         </div>
       </div>
     </div>
