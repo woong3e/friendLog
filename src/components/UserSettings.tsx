@@ -2,17 +2,33 @@ import { useEffect, useState } from 'react';
 import supabase from '../utils/supabase';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
+import { useMetaStore } from '../stores/useMetaStore';
 
 const UserSettings = () => {
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
-  const [userMeta, setUserMeta] = useState('');
-  const [avatarImageUrl, setAvatarImageUrl] = useState('');
-  const [editedNickname, setEditedNickname] = useState('');
-  const [edit, setEdit] = useState<boolean>(true);
+  const [isEdit, setIsEdit] = useState<boolean>(true);
   const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
     noClick: true,
     noKeyboard: true,
   });
+  const {
+    userMeta,
+    avatarImageUrl,
+    editedNickname,
+    setUserMeta,
+    setAvatarImageUrl,
+    setEditedNickname,
+  } = useMetaStore();
+
+  useEffect(() => {
+    console.log(userMeta);
+  });
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'USER_UPDATED') console.log('USER_UPDATED', session);
+    });
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -128,7 +144,7 @@ const UserSettings = () => {
     onSuccess: async () => {
       const latestUser = await fetchUserMeta();
       setUserMeta(latestUser);
-      setEdit(true);
+      setIsEdit(true);
     },
   });
 
@@ -175,13 +191,13 @@ const UserSettings = () => {
       <label htmlFor="nickname" className="text-xl">
         닉네임
       </label>
-      {edit ? (
+      {isEdit ? (
         <>
           <h2 className="text-2xl">{userMeta?.user_metadata?.display_name}</h2>
           <button
             className="text-blue-500 underline cursor-pointer"
             onClick={() => {
-              setEdit((prev) => !prev);
+              setIsEdit((prev) => !prev);
             }}
           >
             수정
