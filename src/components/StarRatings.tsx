@@ -1,14 +1,10 @@
-import ReactStars from 'react-rating-stars-component';
 import supabase from '../utils/supabase';
 import { useParams } from 'react-router-dom';
-import { useAuthStore } from '../stores/useAuthStore';
 import { useState, useEffect } from 'react';
 
 const StarRatings = () => {
   const { id } = useParams();
-  const post_id = parseInt(id);
-  const session = useAuthStore((state) => state.session);
-  const user_id = session?.user.id;
+  const post_id = parseInt(id as string);
   const [avg, setAvg] = useState<number | null>(null);
 
   useEffect(() => {

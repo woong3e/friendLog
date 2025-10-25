@@ -1,20 +1,12 @@
 import supabase from '../utils/supabase';
 import { useAuthStore } from '../stores/useAuthStore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMetaStore } from '../stores/useMetaStore';
 
 const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
-  const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const navigate = useNavigate();
-  const {
-    userMeta,
-    avatarImageUrl,
-    editedNickname,
-    setUserMeta,
-    setAvatarImageUrl,
-    setEditedNickname,
-  } = useMetaStore();
+  const { avatarImageUrl, setAvatarImageUrl } = useMetaStore();
 
   useEffect(() => {
     (async () => {

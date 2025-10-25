@@ -22,7 +22,7 @@ const UserSettings = () => {
 
   useEffect(() => {
     console.log(userMeta);
-  });
+  }, []);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
@@ -136,7 +136,7 @@ const UserSettings = () => {
     mutationFn: async () => {
       const { data, error } = await supabase.auth.updateUser({
         data: {
-          display_name: editedNickname,
+          nickname: editedNickname,
         },
       });
       return data;
@@ -193,7 +193,7 @@ const UserSettings = () => {
       </label>
       {isEdit ? (
         <>
-          <h2 className="text-2xl">{userMeta?.user_metadata?.display_name}</h2>
+          <h2 className="text-2xl">{userMeta?.user_metadata?.nickname}</h2>
           <button
             className="text-blue-500 underline cursor-pointer"
             onClick={() => {

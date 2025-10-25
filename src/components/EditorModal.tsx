@@ -8,13 +8,11 @@ import { useState, useEffect } from 'react';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePostStore } from '../stores/usePostStore';
-import { useAuthStore } from '../stores/useAuthStore';
 import supabase from '../utils/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
-  const session = useAuthStore((state) => state.session);
   const navigate = useNavigate();
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const {

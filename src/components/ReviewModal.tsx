@@ -4,20 +4,20 @@ interface ReviewModal {
 }
 
 import { createPortal } from 'react-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction } from 'react';
 import ReactStars from 'react-rating-stars-component';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import supabase from '../utils/supabase';
 
 const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
   const { id } = useParams();
-  const post_id = parseInt(id);
+  const post_id = parseInt(id as string);
   const session = useAuthStore((state) => state.session);
   const user_id = session?.user.id;
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-  const nickname = session?.user.user_metadata.display_name;
+  const nickname = session?.user.user_metadata.nickname;
   const avatarImageUrl = session?.user.user_metadata.avatarImageUrl;
 
   useEffect(() => {
@@ -88,7 +88,9 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
     window.location.reload();
   };
 
-  const handleCommentChange = (e) => {
+  const handleCommentChange = (e: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setComment(e.target.value);
     console.log(e.target.value);
   };

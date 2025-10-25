@@ -18,7 +18,7 @@ const ToastEditor = forwardRef((props, ref) => {
   const navigate = useNavigate();
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const divRef = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<Editor | null>(null);
+  const editorRef = useRef<any>(null);
   const editorContentRef = useRef('');
   const isDark = useThemeStore((state) => state.isDark);
   const [visible, setVisible] = useState<boolean>(false);

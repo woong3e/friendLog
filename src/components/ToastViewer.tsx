@@ -13,7 +13,7 @@ import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '../styles/custom-toast-editor-dark.css';
 import supabase from '../utils/supabase';
 import { useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
 import { Link } from 'react-router-dom';
@@ -38,11 +38,7 @@ const ToastViewer = () => {
   const {
     title,
     content,
-    imageUrlArr,
-    thumbnailUrl,
     nickname,
-    contentSummary,
-    isEdit,
     created_at,
     setTitle,
     setContent,

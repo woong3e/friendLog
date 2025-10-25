@@ -14,7 +14,7 @@ const CommentSection = () => {
 
   useEffect(() => {
     const fetchRating = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('ratings')
         .select()
         .eq('post_id', post_id);
@@ -23,9 +23,17 @@ const CommentSection = () => {
     fetchRating();
   }, [post_id]);
 
+  const fetchUserMeta = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    console.log(user);
+    return user;
+  };
+
   useEffect(() => {
-    console.log(commentData);
-  });
+    fetchUserMeta();
+  }, []);
 
   return (
     <section className="py-8 antialiased bg-white dark:bg-gray-900 lg:py-16">

@@ -18,7 +18,7 @@ const SignUp = () => {
         options: {
           emailRedirectTo: `http://localhost:5173/signup/otp?email=${email}`,
           data: {
-            display_name: nickname,
+            nickname: nickname,
           },
         },
       });

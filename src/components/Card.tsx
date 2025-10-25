@@ -1,9 +1,6 @@
 import dayjs from 'dayjs';
 
 const Card = ({ post }) => {
-  const imageArray = JSON.parse(post.image_url || '[]');
-  const imageUrl = imageArray[0];
-
   return (
     <div
       className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain
