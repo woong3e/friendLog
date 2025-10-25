@@ -60,19 +60,15 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const uploadThumbnail = async (file: File) => {
     const ext = file.type.split('/')[1];
     const fileName = `${Date.now()}.${ext}`;
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(`thumbnail/${fileName}`, file, {
-        contentType: file.type,
-        upsert: true,
-      });
+    await supabase.storage.from(bucket).upload(`thumbnail/${fileName}`, file, {
+      contentType: file.type,
+      upsert: true,
+    });
     getThumbnailUrl(`thumbnail/${fileName}`);
   };
 
   const getThumbnailUrl = (filePath: string) => {
-    const { data, error } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
     setThumbnailUrl(data.publicUrl);
 
     return data.publicUrl;
@@ -90,7 +86,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const postData = {
     title: title,
     content: content,
-    image_url: imageUrlArr,
+    image_url: JSON.stringify(imageUrlArr),
     thumbnail_url: thumbnailUrl,
     content_summary: contentSummary,
     nickname: nickname,
@@ -133,7 +129,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
 
     const { data, error } = await supabase
       .from('posts')
-      .update([postData])
+      .update(postData)
       .eq('id', Number(id));
 
     if (error) {

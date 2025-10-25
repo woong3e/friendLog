@@ -30,7 +30,7 @@ dayjs.locale('ko');
 
 const ToastViewer = () => {
   const divRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<Viewer | null>(null);
+  const viewerRef = useRef(null);
   const isDark = useThemeStore((state) => state.isDark);
   const { id } = useParams();
   const [visible, setVisible] = useState<boolean>(false);
@@ -89,7 +89,7 @@ const ToastViewer = () => {
     if (data) {
       setTitle(data?.title);
       setContent(data.content);
-      setImageUrlArr(data?.image_url);
+      setImageUrlArr(data.image_url);
       setThumbnailUrl(data?.thumbnail_url);
       setNickname(data.nickname);
       setCreated_At(data.created_at);

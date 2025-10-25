@@ -6,7 +6,7 @@ const HamburgerMenu = ({
   setIsHamburgerMenuOpen,
   toggleHamburgerMenu,
 }) => {
-  const hamburgerMenuRef = useRef<HTMLButtonElement>(null);
+  const hamburgerMenuRef = useRef<HTMLDivElement>(null);
 
   useOutsideClick(hamburgerMenuRef, () => {
     if (isHamburgerMenuOpen) {

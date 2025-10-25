@@ -12,7 +12,7 @@ import supabase from '../utils/supabase';
 
 const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
   const { id } = useParams();
-  const post_id = parseInt(id as string);
+  const post_id = parseInt(id as string | null);
   const session = useAuthStore((state) => state.session);
   const user_id = session?.user.id;
   const [rating, setRating] = useState(0);
@@ -76,7 +76,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
 
     const { data, error } = await supabase
       .from('ratings')
-      .upsert([ratingData], { onConflict: ['post_id', 'user_id'] })
+      .upsert([ratingData])
       .single();
 
     if (error) {

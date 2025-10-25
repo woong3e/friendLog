@@ -11,7 +11,7 @@ interface PostState {
   isEdit: boolean;
   setTitle: (title: string) => void;
   setContent: (content: string) => void;
-  setImageUrlArr: (imageUrlArr: string[]) => void;
+  setImageUrlArr: (imageUrlArr: string | string[]) => void;
   setThumbnailUrl: (thumbnail: string) => void;
   setNickname: (nickname: string) => void;
   setContentSummary: (content_description: string) => void;

@@ -96,12 +96,13 @@ const ToastEditor = forwardRef((props, ref) => {
     fileInput.type = 'file';
     fileInput.multiple = true;
     fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', async function (event) {
-      const files = event.target?.files;
+    fileInput.addEventListener('change', async function (event: Event) {
+      const target = event.target as HTMLInputElement;
+      const files = target.files;
       for (const file of files) {
         if (file.type.startsWith('image/')) {
-          await new Promise<void>((resolve, reject) => {
-            onUploadImage(file, (url, alt) => {
+          await new Promise<void>((resolve) => {
+            onUploadImage(file, (url) => {
               console.log('업로드완료', url);
               const markdownImageLink = `![${file.name}](${url})`;
               updateEditorContent(markdownImageLink);

@@ -10,7 +10,7 @@ dayjs.locale('ko');
 const CommentSection = () => {
   const { id } = useParams();
   const post_id = parseInt(id);
-  const [commentData, setCommentData] = useState<object | null>();
+  const [commentData, setCommentData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchRating = async () => {
