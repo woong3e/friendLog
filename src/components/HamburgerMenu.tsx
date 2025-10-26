@@ -16,24 +16,23 @@ const HamburgerMenu = ({
 
   return (
     <div className="relative flex ml-2 h-full" ref={hamburgerMenuRef}>
-      <div>
-        <button onClick={toggleHamburgerMenu}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth="2.0"
-            stroke="currentColor"
-            className="w-10 h-10  hover:cursor-pointer "
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-            />
-          </svg>
-        </button>
-      </div>
+      <button onClick={toggleHamburgerMenu}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth="2.0"
+          stroke="currentColor"
+          className="w-10 h-10  hover:cursor-pointer "
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+      </button>
+
       {isHamburgerMenuOpen && (
         <div
           className="absolute left-0 z-50 w-30 bg-gray-300 rounded-lg shadow-md top-15 dark:bg-gray-700"

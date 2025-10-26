@@ -134,7 +134,7 @@ const UserSettings = () => {
 
   const editNicknameMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.auth.updateUser({
+      const { data } = await supabase.auth.updateUser({
         data: {
           nickname: editedNickname,
         },

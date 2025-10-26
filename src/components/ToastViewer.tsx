@@ -49,6 +49,7 @@ const ToastViewer = () => {
     setCreated_At,
     setIsEdit,
   } = usePostStore();
+
   const { session } = useAuthStore();
 
   useEffect(() => {
@@ -115,7 +116,7 @@ const ToastViewer = () => {
           <h1 className="flex">
             <p className="text-4xl font-bold">{title}</p>
           </h1>
-          {session && (
+          {session?.user.user_metadata.nickname === nickname ? (
             <div className="flex justify-end gap-3">
               <Link
                 to={`/editor?id=${id}`}
@@ -133,7 +134,7 @@ const ToastViewer = () => {
                 삭제
               </button>
             </div>
-          )}
+          ) : null}
           <div className="flex gap-1">
             <p>{nickname}</p>
             <p>·</p>

@@ -16,7 +16,7 @@ export type Database = {
     Tables: {
       posts: {
         Row: {
-          content: string | null
+          content: string
           content_summary: string | null
           created_at: string
           id: number
@@ -27,7 +27,7 @@ export type Database = {
           title: string
         }
         Insert: {
-          content?: string | null
+          content: string
           content_summary?: string | null
           created_at?: string
           id?: number
@@ -38,7 +38,7 @@ export type Database = {
           title: string
         }
         Update: {
-          content?: string | null
+          content?: string
           content_summary?: string | null
           created_at?: string
           id?: number
@@ -50,27 +50,57 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_image_url: string | null
+          created_at: string
+          email: string
+          id: string
+          nickname: string
+        }
+        Insert: {
+          avatar_image_url?: string | null
+          created_at?: string
+          email: string
+          id: string
+          nickname: string
+        }
+        Update: {
+          avatar_image_url?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          nickname?: string
+        }
+        Relationships: []
+      }
       ratings: {
         Row: {
+          avatar_image_url: string | null
           comment: string | null
           created_at: string
           id: number
+          nickname: string
           post_id: number
           rating: number | null
           user_id: string
         }
         Insert: {
+          avatar_image_url?: string | null
           comment?: string | null
           created_at?: string
           id?: number
+          nickname: string
           post_id: number
           rating?: number | null
           user_id?: string
         }
         Update: {
+          avatar_image_url?: string | null
           comment?: string | null
           created_at?: string
           id?: number
+          nickname?: string
           post_id?: number
           rating?: number | null
           user_id?: string

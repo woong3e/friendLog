@@ -10,6 +10,7 @@ import { useDropzone } from 'react-dropzone';
 import { usePostStore } from '../stores/usePostStore';
 import supabase from '../utils/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
@@ -25,10 +26,16 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     isEdit,
     setThumbnailUrl,
     setContentSummary,
+    setNickname,
   } = usePostStore();
+  const { session } = useAuthStore();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get('id');
+
+  useEffect(() => {
+    setNickname(session.user.user_metadata.nickname);
+  }, []);
 
   useEffect(() => {
     if (visible) {

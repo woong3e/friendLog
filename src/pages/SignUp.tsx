@@ -12,7 +12,7 @@ const SignUp = () => {
 
   const signupMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.auth.signUp({
+      const { data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -23,13 +23,17 @@ const SignUp = () => {
         },
       });
 
-      if (data) {
-        navigate(`/signup/otp?email=${email}`);
-      }
+      const user = data?.user;
+      if (!user) throw new Error('회원 정보가 없습니다.');
 
-      if (error) {
-        console.log(error.message);
-      }
+      await supabase
+        .from('profiles')
+        .update({
+          nickname: nickname,
+        })
+        .eq('id', user.id);
+
+      navigate(`/signup/otp?email=${email}`);
     },
   });
 
