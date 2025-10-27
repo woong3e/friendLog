@@ -229,7 +229,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
             className="w-full px-4 py-3 mt-10 text-sm bg-blue-900 outline-none resize-none h-30 placeholder:text-center"
             placeholder="당신의 컨텐츠를 짧게 소개해보세요."
             onChange={handleContentSummary}
-            value={isEdit ? contentSummary : ''}
+            value={contentSummary}
           ></textarea>
         </p>
         <div className="flex items-end justify-end w-full">
