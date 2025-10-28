@@ -42,15 +42,7 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
       >
         {avatarImageUrl ? (
           <div className="flex justify-between">
-            <img
-              src={avatarImageUrl}
-              alt=""
-              className="w-10 h-10 rounded-full"
-              onError={(e) => {
-                e.currentTarget.src =
-                  'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/avatar-image-default-light%20(1).png';
-              }}
-            />
+            <img src={avatarImageUrl} className="w-10 h-10 rounded-full" />
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

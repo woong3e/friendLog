@@ -4,11 +4,11 @@ import About from './pages/About';
 import NotFoundPage from './pages/404';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import ToastEditor from './components/ToastEditor';
-import ToastViewer from './components/ToastViewer';
+import ToastEditor from './pages/ToastEditor';
+import ToastViewer from './pages/ToastViewer';
 import HasHeaderFooter from './HasHeaderFooter';
 import OtpInput from './components/OtpInput';
-import UserSettings from './components/UserSettings';
+import UserSettings from './pages/UserSettings';
 
 export default function Router() {
   return (
