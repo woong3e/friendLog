@@ -13,10 +13,9 @@ import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '../styles/custom-toast-editor-dark.css';
 import supabase from '../utils/supabase';
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
-import { Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import FAB from '../components/FAB';
 import StarRatings from '../components/StarRatings';
@@ -40,6 +39,7 @@ const ToastViewer = () => {
     content,
     nickname,
     created_at,
+    isEdit,
     setTitle,
     setContent,
     setImageUrlArr,
@@ -49,6 +49,7 @@ const ToastViewer = () => {
     setCreated_At,
     setIsEdit,
   } = usePostStore();
+  const navigate = useNavigate();
 
   const { session } = useAuthStore();
 
@@ -59,6 +60,12 @@ const ToastViewer = () => {
   useEffect(() => {
     getPosts();
   }, [id]);
+
+  useEffect(() => {
+    if (isEdit) {
+      navigate(`/editor?id=${id}`);
+    }
+  }, [isEdit]);
 
   useEffect(() => {
     if (divRef.current && title) {
@@ -118,13 +125,12 @@ const ToastViewer = () => {
           </h1>
           {session?.user.user_metadata.nickname === nickname ? (
             <div className="flex justify-end gap-3">
-              <Link
-                to={`/editor?id=${id}`}
-                className="text-gray-400 hover:text-green-600"
+              <button
+                className="text-gray-400 hover:text-green-600 cursor-pointer"
                 onClick={handlePostUpdate}
               >
                 수정
-              </Link>
+              </button>
               <button
                 className="text-gray-400 hover:text-red-600 cursor-pointer"
                 onClick={() => {

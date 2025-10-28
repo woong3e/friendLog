@@ -21,9 +21,6 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
   const avatarImageUrl = session?.user.user_metadata.avatarImageUrl;
 
   useEffect(() => {
-    console.log(session?.user.user_metadata.avatarImageUrl);
-  }, []);
-  useEffect(() => {
     if (visible) {
       setIsClosing(false);
     }

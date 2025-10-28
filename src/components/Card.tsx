@@ -2,10 +2,6 @@ import dayjs from 'dayjs';
 import { useEffect } from 'react';
 
 const Card = ({ post }) => {
-  useEffect(() => {
-    console.log(post);
-  }, []);
-
   return (
     <div
       className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain

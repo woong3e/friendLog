@@ -33,16 +33,6 @@ const ToastEditor = forwardRef((props, ref) => {
     setImageUrlArr,
   } = usePostStore();
 
-  useEffect(() => {
-    if (isEdit) {
-      setTitle(title);
-      editorRef?.current?.setMarkdown(content);
-    } else {
-      setTitle('');
-      setContent('');
-    }
-  }, [isEdit]);
-
   useImperativeHandle(ref, () => ({
     getInstance: () => editorRef.current,
   }));
@@ -88,6 +78,16 @@ const ToastEditor = forwardRef((props, ref) => {
       });
     }
   }, [isDark]);
+
+  useEffect(() => {
+    if (isEdit && editorRef.current) {
+      setTitle(title);
+      editorRef.current.setMarkdown(content);
+    } else {
+      setTitle('');
+      setContent('');
+    }
+  }, [isEdit]);
 
   const UploadImagesBtn = () => {
     const fileInput = document.createElement('input');
