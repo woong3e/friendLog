@@ -177,7 +177,6 @@ const ToastEditor = forwardRef((props, ref) => {
 
   const updateEditorContent = (newContent: string) => {
     const currentContent = editorRef?.current?.getMarkdown();
-
     editorRef?.current?.setMarkdown(`${currentContent}\n${newContent}`);
   };
 

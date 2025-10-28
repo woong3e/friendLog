@@ -13,7 +13,7 @@ import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '../styles/custom-toast-editor-dark.css';
 import supabase from '../utils/supabase';
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
 import { Link } from 'react-router-dom';
@@ -49,7 +49,7 @@ const ToastViewer = () => {
     setCreated_At,
     setIsEdit,
   } = usePostStore();
-
+  const navigate = useNavigate();
   const { session } = useAuthStore();
 
   useEffect(() => {
@@ -100,6 +100,7 @@ const ToastViewer = () => {
 
   const handlePostUpdate = () => {
     setIsEdit(true);
+    navigate(`/editor?id=${id}`);
   };
 
   return (
@@ -118,13 +119,12 @@ const ToastViewer = () => {
           </h1>
           {session?.user.user_metadata.nickname === nickname ? (
             <div className="flex justify-end gap-3">
-              <Link
-                to={`/editor?id=${id}`}
+              <button
                 className="text-gray-400 hover:text-green-600"
                 onClick={handlePostUpdate}
               >
                 수정
-              </Link>
+              </button>
               <button
                 className="text-gray-400 hover:text-red-600 cursor-pointer"
                 onClick={() => {
