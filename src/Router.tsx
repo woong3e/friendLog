@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
 import Main from './pages/Main';
-import About from './pages/About';
 import NotFoundPage from './pages/404';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -16,7 +15,6 @@ export default function Router() {
       <Route element={<HasHeaderFooter />}>
         <Route path="/" element={<Main />} />
         <Route path="*" element={<NotFoundPage />} />
-        <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signup/otp" element={<OtpInput />} />

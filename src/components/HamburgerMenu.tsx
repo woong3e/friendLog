@@ -55,14 +55,6 @@ const HamburgerMenu = ({
                 등록하기
               </a>
             </li>
-            <li>
-              <a
-                href="/about"
-                className="block px-3 py-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-              >
-                About
-              </a>
-            </li>
           </ul>
         </div>
       )}
