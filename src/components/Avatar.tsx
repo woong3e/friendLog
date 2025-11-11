@@ -41,15 +41,15 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
         className="flex items-center justify-center w-15 h-10 overflow-hidden hover:cursor-pointer"
       >
         {avatarImageUrl ? (
-          <div className="flex justify-between">
-            <img src={avatarImageUrl} className="w-10 h-10 rounded-full" />
+          <div className="flex justify-between items-center">
+            <img src={avatarImageUrl} className="w-9 h-9 rounded-full" />
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="w-10 h-10"
+              className="w-5 h-10"
             >
               <path
                 strokeLinecap="round"

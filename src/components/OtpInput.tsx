@@ -74,7 +74,7 @@ const OtpInput = () => {
   };
 
   return (
-    <form className="flex flex-col items-center justify-center mx-auto h-svh">
+    <form className="flex flex-col items-center justify-center mx-auto h-dvh">
       <div className="flex justify-center mb-2 space-x-2 rtl:space-x-reverse">
         {[...Array(6)].map((_, i) => (
           <div key={i}>

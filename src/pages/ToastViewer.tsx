@@ -76,7 +76,7 @@ const ToastViewer = () => {
 
       viewerRef.current = new Viewer({
         el: divRef.current,
-        height: '90svh',
+        height: '90dvh',
         theme: isDark ? 'dark' : 'light',
         viewer: true,
         initialValue: content,
@@ -112,7 +112,7 @@ const ToastViewer = () => {
   return (
     <>
       <div
-        className={`flex flex-col px-2 mx-auto my-0 md:w-3xl min-h-screen ${
+        className={`flex flex-col px-2 mx-auto md:w-3xl h-dvh my-3 relative${
           visible ? 'overflow-hidden ml-1000' : ''
           //모바일 환경(safari)에서 nav_bar가 너무 커서 모달을 띄웠을 때
           //nav_bar쪽에 ToastViewer가 나타나서 연속성을 해침.(모달에 더 focus를 주기 위함.)
@@ -148,7 +148,7 @@ const ToastViewer = () => {
           </div>
         </div>
         <div ref={divRef} className="flex justify-around"></div>
-        <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700" />
+        <hr className="h-px my-6 bg-gray-200 border-px dark:bg-gray-700" />
         <StarRatings />
         <CommentSection />
       </div>

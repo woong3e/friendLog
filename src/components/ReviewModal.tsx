@@ -94,7 +94,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
 
   return createPortal(
     <main
-      className={`fixed inset-0 w-full h-full z-1000 bg-white dark:bg-gray-900 flex justify-center py-5
+      className={`fixed inset-0 w-full h-full z-99 bg-white dark:bg-gray-900 flex justify-center py-5
         ${visible && !isClosing ? 'animate-slideup' : ''}
         ${isClosing ? 'animate-slidedown' : ''}
         `}
@@ -118,7 +118,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
             activeColor={'#ffd700'}
           />
         </div>
-        <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700" />
+        <hr className="h-px my-6 bg-gray-200 border-px dark:bg-gray-700" />
         <p className="flex justify-center">준비성</p>
         <div className="flex justify-center">
           <ReactStars
@@ -130,7 +130,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
             activeColor={'#ffd700'}
           />
         </div>
-        <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700" />
+        <hr className="h-px my-6 bg-gray-200 border-px dark:bg-gray-700" />
 
         <p className="flex justify-center">만족도</p>
         <div className="flex justify-center">
@@ -143,7 +143,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
             activeColor={'#b90505'}
           />
         </div>
-        <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700" />
+        <hr className="h-px my-6 bg-gray-200 border-px dark:bg-gray-700" />
         <section className="py-8 antialiased bg-white dark:bg-gray-900">
           <div className="max-w-2xl px-4 mx-auto">
             <form className="mb-6" onSubmit={handleSubmitReview}>

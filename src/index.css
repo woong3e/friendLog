@@ -29,29 +29,11 @@
     position: relative;
   }
 
-  .toastui-editor-tooltip {
-    left: 78% !important;
-    top: 4% !important;
-    transform: translate(0, -50%) !important;
-    z-index: 9999 !important;
-  }
-
-  .toastui-editor-tooltip .arrow {
-    left: -5px !important;
-    top: 50% !important;
-    transform: translateY(-50%) rotate(45deg) !important;
-    background-color: #444;
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    z-index: -1;
-  }
-
   .toastui-editor-popup.toastui-editor-popup-add-heading {
     left: 38% !important;
     top: 25% !important;
     transform: translate(0, -50%) !important;
-    z-index: 9999 !important;
+    z-index: 99 !important;
   }
   .toastui-editor-dropdown-toolbar {
     right: 0px !important;
@@ -91,3 +73,11 @@
   font-size: 16px;
 }
 //Editor에서 줌인 방지를 위해 default font-size를 16px 이상으로 설정.
+
+//ios에서 viewport 이슈 해결을 위함.
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: 100vh;
+    max-height: -webkit-fill-available !important;
+  }
+}
