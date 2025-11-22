@@ -56,6 +56,7 @@ const ToastViewer = () => {
   const { session } = useAuthStore();
 
   useEffect(() => {
+    setIsEdit(false);
     console.log(session?.user.email);
   }, []);
 
@@ -63,11 +64,7 @@ const ToastViewer = () => {
     getPosts();
   }, [id]);
 
-  useEffect(() => {
-    if (isEdit) {
-      navigate(`/editor?id=${id}`);
-    }
-  }, [isEdit]);
+
 
   useEffect(() => {
     if (divRef.current && title) {
@@ -110,6 +107,7 @@ const ToastViewer = () => {
 
   const handlePostUpdate = () => {
     setIsEdit(true);
+    navigate(`/editor?id=${id}`);
   };
 
   return (

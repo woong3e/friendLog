@@ -12,7 +12,7 @@ import '../styles/custom-toast-editor-dark.css';
 import supabase from '../utils/supabase';
 import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ToastEditor = forwardRef((props, ref) => {
   const navigate = useNavigate();
@@ -32,7 +32,15 @@ const ToastEditor = forwardRef((props, ref) => {
     setContent,
     setImageUrlArr,
     setIsEdit,
+    setThumbnailUrl,
+    setNickname,
+    setCreated_At,
+    setContentSummary,
+    setEmail,
   } = usePostStore();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get('id');
 
   useImperativeHandle(ref, () => ({
     getInstance: () => editorRef.current,
@@ -56,7 +64,7 @@ const ToastEditor = forwardRef((props, ref) => {
         previewHighlight: false,
         placeholder: '내용을 입력하세요.',
         usageStatistics: false,
-        initialValue: editorContentRef.current,
+        initialValue: editorContentRef.current || (isEdit ? content : ''),
         initialEditType: 'markdown',
         hideModeSwitch: true,
         toolbarItems: [
@@ -89,6 +97,41 @@ const ToastEditor = forwardRef((props, ref) => {
       setContent('');
     }
   }, [isEdit]);
+
+  useEffect(() => {
+    if (id) {
+      getPost();
+    }
+  }, [id]);
+
+  const getPost = async () => {
+    if (!id) return;
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('id', Number(id))
+      .single();
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    if (data) {
+      setTitle(data.title);
+      setContent(data.content);
+      setImageUrlArr(data.image_url);
+      setThumbnailUrl(data.thumbnail_url);
+      setNickname(data.nickname);
+      setCreated_At(data.created_at);
+      setContentSummary(data.content_summary);
+      setEmail((data as any)?.email);
+      setIsEdit(true);
+      if (editorRef.current) {
+        editorRef.current.setMarkdown(data.content);
+      }
+    }
+  };
 
   const UploadImagesBtn = () => {
     const fileInput = document.createElement('input');
