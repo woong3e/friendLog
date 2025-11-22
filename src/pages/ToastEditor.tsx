@@ -31,6 +31,7 @@ const ToastEditor = forwardRef((props, ref) => {
     setTitle,
     setContent,
     setImageUrlArr,
+    setIsEdit,
   } = usePostStore();
 
   useImperativeHandle(ref, () => ({
@@ -190,7 +191,7 @@ const ToastEditor = forwardRef((props, ref) => {
     <>
       <div className="flex justify-center h-1/18">
         <input
-          className="p-1 pl-6 text-3xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900"
+          className="p-1 pl-6 text-2xl font-bold bg-white rounded w-99/100 focus-within:outline-2 focus-within:outline-gray-900 dark:bg-gray-900"
           placeholder="제목을 입력하세요."
           type="text"
           defaultValue={title ?? title}
@@ -205,6 +206,7 @@ const ToastEditor = forwardRef((props, ref) => {
         <div className="flex w-full justify-between">
           <button
             onClick={() => {
+              setIsEdit(false);
               navigate('/');
             }}
             className="bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -212,12 +214,6 @@ const ToastEditor = forwardRef((props, ref) => {
             나가기
           </button>
           <div className="flex w-1/2 justify-end">
-            {/* <button
-              type="button"
-              className="bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mr-1"
-            >
-              임시저장
-            </button> */}
             {!isEdit ? (
               <button
                 onClick={() => {

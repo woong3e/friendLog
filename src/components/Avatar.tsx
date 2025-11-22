@@ -2,25 +2,31 @@ import supabase from '../utils/supabase';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMetaStore } from '../stores/useMetaStore';
+import { useProfileStore } from '../stores/useProfileStore';
 
 const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
   const navigate = useNavigate();
-  const { avatarImageUrl, setAvatarImageUrl } = useMetaStore();
+  const { avatarImageUrl, setAvatarImageUrl, setNickname } = useProfileStore();
+  const { session } = useAuthStore();
 
   useEffect(() => {
-    (async () => {
-      const user = await fetchUserMeta();
-      setAvatarImageUrl(user?.user_metadata.avatarImageUrl);
-    })();
-  }, []);
+    const fetchUserProfile = async () => {
+      if (!session?.user?.id) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('avatar_image_url, nickname')
+        .eq('id', session.user.id)
+        .single();
 
-  const fetchUserMeta = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return user;
-  };
+      if (data) {
+        setAvatarImageUrl(data.avatar_image_url);
+        setNickname(data.nickname);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [session]);
 
   const clearSession = useAuthStore((state) => state.clearSession);
 

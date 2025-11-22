@@ -14,11 +14,47 @@ const CommentSection = () => {
 
   useEffect(() => {
     const fetchRating = async () => {
-      const { data } = await supabase
+      // 1. Fetch ratings
+      const { data: ratingsData, error: ratingsError } = await supabase
         .from('ratings')
-        .select()
-        .eq('post_id', post_id);
-      setCommentData(data);
+        .select('*')
+        .eq('post_id', post_id)
+        .order('created_at', { ascending: false });
+
+      if (ratingsError) {
+        console.error('Error fetching ratings:', ratingsError);
+        return;
+      }
+
+      if (!ratingsData || ratingsData.length === 0) {
+        setCommentData([]);
+        return;
+      }
+
+      // 2. Fetch profiles for the users in ratings
+      const userIds = ratingsData.map((r) => r.user_id);
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, nickname, avatar_image_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        // Fallback to showing ratings without profile info if profile fetch fails
+        setCommentData(ratingsData);
+        return;
+      }
+
+      // 3. Merge data
+      const mergedData = ratingsData.map((rating) => {
+        const profile = profilesData?.find((p) => p.id === rating.user_id);
+        return {
+          ...rating,
+          profiles: profile || null,
+        };
+      });
+
+      setCommentData(mergedData);
     };
     fetchRating();
   }, [post_id]);
@@ -47,11 +83,11 @@ const CommentSection = () => {
               <div className="flex items-center">
                 <p className="inline-flex items-center mr-3 text-sm font-semibold text-gray-900 dark:text-white">
                   <img
-                    className="w-6 h-6 mr-2 rounded-full"
-                    src={item.avatar_image_url}
-                    alt="Michael Gough"
+                    className="w-6 h-6 mr-2 rounded-full object-cover"
+                    src={item.profiles?.avatar_image_url || 'https://via.placeholder.com/150'}
+                    alt={item.profiles?.nickname}
                   />
-                  {item.nickname}
+                  {item.profiles?.nickname || 'Unknown'}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   <time dateTime={dayjs().fromNow()} title={dayjs().fromNow()}>

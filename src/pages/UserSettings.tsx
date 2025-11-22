@@ -2,40 +2,40 @@ import { useEffect, useState } from 'react';
 import supabase from '../utils/supabase';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
-import { useMetaStore } from '../stores/useMetaStore';
+import { useAuthStore } from '../stores/useAuthStore';
+import { useProfileStore } from '../stores/useProfileStore';
 
 const UserSettings = () => {
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const [isEdit, setIsEdit] = useState<boolean>(true);
+  const [editedNickname, setEditedNickname] = useState<string>('');
   const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
     noClick: true,
     noKeyboard: true,
   });
+
   const {
-    userMeta,
+    nickname,
+    email,
     avatarImageUrl,
-    editedNickname,
-    setUserMeta,
+    setNickname,
+    setEmail,
     setAvatarImageUrl,
-    setEditedNickname,
-  } = useMetaStore();
+  } = useProfileStore();
+
+  const { session } = useAuthStore();
 
   useEffect(() => {
-    console.log(userMeta);
+    console.log(session);
   }, []);
 
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'USER_UPDATED') console.log('USER_UPDATED', session);
-    });
-  }, []);
 
   useEffect(() => {
-    (async () => {
-      const user = await fetchUserMeta();
-      updateAvatarUrlMeta(user);
-      setUserMeta(user);
-    })();
+    const fetchProfiles = async () => {
+      const user = await fetchUserProfiles();
+      console.log(user);
+    };
+    fetchProfiles();
   }, []);
 
   useEffect(() => {
@@ -44,41 +44,29 @@ const UserSettings = () => {
     }
   }, [acceptedFiles]);
 
-  useEffect(() => {
-    storeAvatarUrlMeta();
-  }, [avatarImageUrl]);
+  // Profiles
+  // Profiles
+  const fetchUserProfiles = async () => {
+    if (!session?.user?.id) return;
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
 
-  const fetchUserMeta = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return user;
-  };
-
-  const storeAvatarUrlMeta = async () => {
-    if (avatarImageUrl === '') return;
-    const { data, error } = await supabase.auth.updateUser({
-      data: { avatarImageUrl: avatarImageUrl },
-    });
-    if (error) console.error('Error updating avatar:', error);
-    else console.log('Updated user metadata:', data);
-  };
-
-  const updateAvatarUrlMeta = (user) => {
-    const metadata = user?.user_metadata;
-    if (metadata?.avatarImageUrl) {
-      setAvatarImageUrl(metadata.avatarImageUrl);
+    if (error) {
+      console.error('Error fetching profile:', error);
+    } else if (data) {
+      console.log('fetch user profiles', data);
+      setNickname(data.nickname);
+      setAvatarImageUrl(data.avatar_image_url);
+      setEditedNickname(data.nickname);
     }
+    return data;
   };
 
-  const removeAvatarUrlMeta = async () => {
-    const { data, error } = await supabase.auth.updateUser({
-      data: { avatarImageUrl: null },
-    });
-    if (error) console.error('removing avatar Error', error);
-    else console.log('Removed user meta', data);
-  };
-
+  // upload Storage
   const uploadAvatarImage = async (file: File) => {
     if (file.type == undefined) return;
 
@@ -102,8 +90,17 @@ const UserSettings = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: uploadAvatarImage,
-    onSuccess: (url: string) => {
+    onSuccess: async (url: string) => {
+      if (!url) return;
       setAvatarImageUrl(url);
+      
+      // Update profile in DB
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_image_url: url })
+        .eq('id', session.user.id);
+        
+      if (error) console.error('Error updating avatar in profile:', error);
     },
   });
 
@@ -128,22 +125,28 @@ const UserSettings = () => {
 
   const handleRemove = async () => {
     await removeAvatarImage();
-    await removeAvatarUrlMeta();
     setAvatarImageUrl('');
   };
 
+  //edit nickname
   const editNicknameMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await supabase.auth.updateUser({
-        data: {
-          nickname: editedNickname,
-        },
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ nickname: editedNickname })
+        .eq('id', session.user.id)
+        .select();
+        
+      if (error) {
+        console.error(error);
+        throw error;
+      }
       return data;
     },
-    onSuccess: async () => {
-      const latestUser = await fetchUserMeta();
-      setUserMeta(latestUser);
+    onSuccess: (data) => {
+      if (data && data.length > 0) {
+        setNickname(data[0].nickname);
+      }
       setIsEdit(true);
     },
   });
@@ -193,14 +196,14 @@ const UserSettings = () => {
           </button>
         </div>
       </section>
-      <hr className="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700" />
+      <hr className="h-px my-6 bg-gray-200 border-px dark:bg-gray-700" />
 
       <label htmlFor="nickname" className="text-xl">
         닉네임
       </label>
       {isEdit ? (
         <>
-          <h2 className="text-2xl">{userMeta?.user_metadata?.nickname}</h2>
+          <h2 className="text-2xl">{nickname}</h2>
           <button
             className="text-blue-500 underline cursor-pointer"
             onClick={() => {

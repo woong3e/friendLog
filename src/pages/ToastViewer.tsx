@@ -112,7 +112,7 @@ const ToastViewer = () => {
   return (
     <>
       <div
-        className="flex flex-col px-2 mx-auto md:w-3xl h-dvh my-3 relative"
+        className="flex flex-col px-2 mx-auto md:w-3xl my-3 relative"
       >
         <div>
           <h1 className="flex">
