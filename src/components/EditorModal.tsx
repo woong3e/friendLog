@@ -97,6 +97,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     thumbnail_url: thumbnailUrl,
     content_summary: contentSummary,
     nickname: nickname,
+    email: session?.user?.email,
   };
 
   const handlePostPublish = async () => {

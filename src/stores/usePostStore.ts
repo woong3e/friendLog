@@ -8,6 +8,7 @@ interface PostState {
   nickname: string;
   contentSummary: string;
   created_at: string;
+  email: string;
   isEdit: boolean;
   setTitle: (title: string) => void;
   setContent: (content: string) => void;
@@ -16,6 +17,7 @@ interface PostState {
   setNickname: (nickname: string) => void;
   setContentSummary: (content_description: string) => void;
   setCreated_At: (created_at: string) => void;
+  setEmail: (email: string) => void;
   setIsEdit: (isEdit: boolean) => void;
 }
 
@@ -27,6 +29,7 @@ export const usePostStore = create<PostState>((set) => ({
   nickname: '',
   contentSummary: '',
   created_at: '',
+  email: '',
   isEdit: false,
   setTitle: (title) => set({ title }),
   setContent: (content) => set({ content }),
@@ -36,5 +39,6 @@ export const usePostStore = create<PostState>((set) => ({
   setNickname: (nickname) => set({ nickname }),
   setContentSummary: (contentSummary) => set({ contentSummary }),
   setCreated_At: (created_at) => set({ created_at }),
+  setEmail: (email) => set({ email }),
   setIsEdit: (isEdit) => set({ isEdit }),
 }));

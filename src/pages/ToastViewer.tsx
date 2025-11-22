@@ -7,6 +7,7 @@ export interface Post {
   content_summary: string | null;
   created_at: string;
   nickname: string;
+  email: string;
 }
 
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
@@ -48,6 +49,7 @@ const ToastViewer = () => {
     setContentSummary,
     setCreated_At,
     setIsEdit,
+    setEmail,
   } = usePostStore();
   const navigate = useNavigate();
 
@@ -102,6 +104,7 @@ const ToastViewer = () => {
       setNickname(data.nickname);
       setCreated_At(data.created_at);
       setContentSummary(data?.content_summary);
+      setEmail(data?.email);
     }
   };
 
@@ -118,7 +121,7 @@ const ToastViewer = () => {
           <h1 className="flex">
             <p className="text-4xl font-bold">{title}</p>
           </h1>
-          {session?.user.user_metadata.nickname === nickname ? (
+          {session?.user.email === usePostStore.getState().email ? (
             <div className="flex justify-end gap-3">
               <button
                 className="text-gray-400 hover:text-green-600 cursor-pointer"
@@ -147,7 +150,9 @@ const ToastViewer = () => {
         <StarRatings />
         <CommentSection />
       </div>
-      <FAB visible={visible} setVisible={setVisible} />
+      {session?.user.email !== usePostStore.getState().email && (
+        <FAB visible={visible} setVisible={setVisible} />
+      )}
       <DeleteModal
         openDeleteModal={openDeleteModal}
         setOpenDeleteModal={setOpenDeleteModal}
