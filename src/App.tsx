@@ -6,6 +6,7 @@ import { useAuthStore } from './stores/useAuthStore';
 function App() {
   supabase.auth.getSession().then(({ data }) => {
     useAuthStore.getState().setSession(data.session);
+    useAuthStore.getState().setInitialized(true);
   });
 
   supabase.auth.onAuthStateChange((_event, session) => {
