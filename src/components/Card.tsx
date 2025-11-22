@@ -8,7 +8,7 @@ const Card = ({ post }) => {
 "
     >
       <img
-        className="w-full h-auto max-h-50 rounded-t-lg object-contain border-b-1"
+        className="w-full h-50 rounded-t-lg object-cover object-center border-b-1"
         src={post.thumbnail_url}
         onError={(e) => {
           e.currentTarget.src =
