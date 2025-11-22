@@ -94,7 +94,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
 
   return createPortal(
     <main
-      className={`fixed inset-0 w-full h-full z-99 bg-white dark:bg-gray-900 flex justify-center py-5
+      className={`fixed inset-0 w-full h-dvh z-99 bg-white dark:bg-gray-900 flex justify-center py-5
         ${visible && !isClosing ? 'animate-slideup' : ''}
         ${isClosing ? 'animate-slidedown' : ''}
         `}
