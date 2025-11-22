@@ -19,6 +19,7 @@ export type Database = {
           content: string
           content_summary: string | null
           created_at: string
+          email: string | null
           id: number
           image_url: string | null
           nickname: string
@@ -30,6 +31,7 @@ export type Database = {
           content: string
           content_summary?: string | null
           created_at?: string
+          email?: string | null
           id?: number
           image_url?: string | null
           nickname: string
@@ -41,6 +43,7 @@ export type Database = {
           content?: string
           content_summary?: string | null
           created_at?: string
+          email?: string | null
           id?: number
           image_url?: string | null
           nickname?: string
@@ -54,21 +57,21 @@ export type Database = {
         Row: {
           avatar_image_url: string | null
           created_at: string
-          email: string
+          email: string | null
           id: string
           nickname: string
         }
         Insert: {
           avatar_image_url?: string | null
           created_at?: string
-          email: string
+          email?: string | null
           id: string
           nickname: string
         }
         Update: {
           avatar_image_url?: string | null
           created_at?: string
-          email?: string
+          email?: string | null
           id?: string
           nickname?: string
         }
@@ -112,6 +115,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "posts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_avatar_image_url_fkey"
+            columns: ["avatar_image_url"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["avatar_image_url"]
           },
         ]
       }
