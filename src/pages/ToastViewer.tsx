@@ -110,6 +110,29 @@ const ToastViewer = () => {
     navigate(`/editor?id=${id}`);
   };
 
+  const [authorNickname, setAuthorNickname] = useState<string>('');
+
+  useEffect(() => {
+    const fetchAuthorNickname = async () => {
+      const email = usePostStore.getState().email;
+      if (!email) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('nickname')
+        .eq('email', email)
+        .single();
+      
+      if (data?.nickname) {
+        setAuthorNickname(data.nickname);
+      }
+    };
+    
+    if (usePostStore.getState().email) {
+        fetchAuthorNickname();
+    }
+  }, [usePostStore.getState().email]);
+
   return (
     <>
       <div
@@ -138,7 +161,7 @@ const ToastViewer = () => {
             </div>
           ) : null}
           <div className="flex gap-1">
-            <p>{nickname}</p>
+            <p>{authorNickname || nickname}</p>
             <p>·</p>
             <p>{dayjs(created_at).fromNow()}</p>
           </div>

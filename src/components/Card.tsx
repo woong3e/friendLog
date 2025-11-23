@@ -9,21 +9,25 @@ const Card = ({ post }) => {
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [isMeetingFuture, setIsMeetingFuture] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [currentNickname, setCurrentNickname] = useState<string>(post.nickname);
 
   useEffect(() => {
-    const fetchAvatar = async () => {
+    const fetchProfile = async () => {
       if (!post.email) return;
       const { data } = await supabase
         .from('profiles')
-        .select('avatar_image_url')
+        .select('avatar_image_url, nickname')
         .eq('email', post.email)
         .single();
       
       if (data) {
         setAvatarUrl(data.avatar_image_url);
+        if (data.nickname) {
+          setCurrentNickname(data.nickname);
+        }
       }
     };
-    fetchAvatar();
+    fetchProfile();
   }, [post.email]);
 
   useEffect(() => {
@@ -104,7 +108,7 @@ const Card = ({ post }) => {
                 className="w-6 h-6 rounded-full object-cover"
               />
             )}
-            <p className="text-sm">{post.nickname}</p>
+            <p className="text-sm">{currentNickname}</p>
           </div>
           <p className="text-sm flex">
             <div className="flex justify-center items-center">
