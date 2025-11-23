@@ -34,8 +34,23 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const id = queryParams.get('id');
 
   useEffect(() => {
-    setNickname(session.user.user_metadata.nickname);
-  }, []);
+    const fetchNickname = async () => {
+      if (session?.user?.id) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('nickname')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (data?.nickname) {
+          setNickname(data.nickname);
+        } else {
+          setNickname(session.user.user_metadata.nickname);
+        }
+      }
+    };
+    fetchNickname();
+  }, [session]);
 
   useEffect(() => {
     if (visible) {

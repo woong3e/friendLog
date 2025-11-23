@@ -1,20 +1,89 @@
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
+import duration from 'dayjs/plugin/duration';
+import { useEffect, useState } from 'react';
+import supabase from '../utils/supabase';
+
+dayjs.extend(duration);
 
 const Card = ({ post }) => {
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [isMeetingFuture, setIsMeetingFuture] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      if (!post.email) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('avatar_image_url')
+        .eq('email', post.email)
+        .single();
+      
+      if (data) {
+        setAvatarUrl(data.avatar_image_url);
+      }
+    };
+    fetchAvatar();
+  }, [post.email]);
+
+  useEffect(() => {
+    const match = post.content.match(/### 시간:\s*(.+)/);
+    if (match) {
+      const timeStr = match[1].split('\n')[0].trim();
+      const targetDate = dayjs(timeStr);
+
+      if (targetDate.isValid() && targetDate.isAfter(dayjs())) {
+        setIsMeetingFuture(true);
+
+        const updateTimer = () => {
+          const now = dayjs();
+          const diff = targetDate.diff(now);
+
+          if (diff <= 0) {
+            setIsMeetingFuture(false);
+            setTimeLeft(null);
+          } else {
+            const dur = dayjs.duration(diff);
+            const days = Math.floor(dur.asDays());
+            const hours = dur.hours().toString().padStart(2, '0');
+            const minutes = dur.minutes().toString().padStart(2, '0');
+            const seconds = dur.seconds().toString().padStart(2, '0');
+            
+            if (days > 0) {
+                setTimeLeft(`${days}일 ${hours}:${minutes}:${seconds}`);
+            } else {
+                setTimeLeft(`${hours}:${minutes}:${seconds}`);
+            }
+          }
+        };
+
+        updateTimer();
+        const timer = setInterval(updateTimer, 1000);
+
+        return () => clearInterval(timer);
+      }
+    }
+  }, [post.content]);
+
   return (
     <div
-      className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain
-"
+      className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain"
     >
-      <img
-        className="w-full h-50 rounded-t-lg object-cover object-center border-b-1"
-        src={post.thumbnail_url}
-        onError={(e) => {
-          e.currentTarget.src =
-            'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/thumbnail-default-light.png';
-        }}
-      />
+      {isMeetingFuture && timeLeft ? (
+        <div className="w-full h-50 rounded-t-lg bg-black/80 flex flex-col items-center justify-center text-white border-b-1">
+            <p className="text-sm text-gray-300 mb-1">모임 예정</p>
+            <p className="font-bold text-2xl tracking-wider">{timeLeft}</p>
+        </div>
+      ) : (
+        <img
+            className="w-full h-50 rounded-t-lg object-cover object-center border-b-1"
+            src={post.thumbnail_url}
+            onError={(e) => {
+            e.currentTarget.src =
+                'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/thumbnail-default-light.png';
+            }}
+        />
+      )}
       <div className="pt-4 pb-2">
         <h5 className="mb-2 text-lg font-bold tracking-tight truncate px-4">
           {post.title}
@@ -26,7 +95,17 @@ const Card = ({ post }) => {
           {dayjs(post.created_at).format('YYYY-MM-DD')}
         </p>
         <div className="flex justify-between items-end px-4 mb-1">
-          <p className="text-sm">by {post.nickname}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm">by</p>
+            {avatarUrl && (
+              <img
+                src={avatarUrl}
+                alt="avatar"
+                className="w-6 h-6 rounded-full object-cover"
+              />
+            )}
+            <p className="text-sm">{post.nickname}</p>
+          </div>
           <p className="text-sm flex">
             <div className="flex justify-center items-center">
               <svg

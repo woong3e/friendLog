@@ -1,4 +1,5 @@
 import EditorModal from '../components/EditorModal';
+import TemplateModal from '../components/TemplateModal';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import Editor from '@toast-ui/editor';
 import {
@@ -22,6 +23,7 @@ const ToastEditor = forwardRef((props, ref) => {
   const editorContentRef = useRef('');
   const isDark = useThemeStore((state) => state.isDark);
   const [visible, setVisible] = useState<boolean>(false);
+  const [templateModalVisible, setTemplateModalVisible] = useState<boolean>(false);
 
   const {
     title,
@@ -68,18 +70,14 @@ const ToastEditor = forwardRef((props, ref) => {
         initialEditType: 'markdown',
         hideModeSwitch: true,
         toolbarItems: [
-          ['heading', 'bold', 'italic', 'strike'],
-          ['hr', 'quote'],
-          ['ul', 'ol', 'task'],
-          [
-            'table',
-            'link',
-            {
+          ['heading', 'bold', 'strike','hr','link',{
               el: UploadImagesBtn(),
               tooltip: '이미지 업로드하기',
             },
-          ],
-          ['scrollSync'],
+            {
+              el: TemplateBtn(),
+              tooltip: '템플릿 삽입',
+            },'scrollSync'],
         ],
         hooks: {
           addImageBlobHook: onUploadImage,
@@ -132,6 +130,26 @@ const ToastEditor = forwardRef((props, ref) => {
       }
     }
   };
+
+  const TemplateBtn = () => {
+    const button = document.createElement('button');
+
+    button.className = 'toastui-editor-toolbar-icons last';
+    button.style.backgroundImage = 'none';
+    button.style.margin = '0';
+    button.style.width = 'auto';
+    button.style.padding = '0 5px';
+    button.style.fontSize = '13px';
+    button.style.color = isDark ? 'white' : 'black';
+    button.innerHTML = `<i style="font-size: 20px;font-weight: bold;">T</i>`;
+
+    button.addEventListener('click', () => {
+      setTemplateModalVisible(true);
+    });
+
+    return button;
+  };
+
 
   const UploadImagesBtn = () => {
     const fileInput = document.createElement('input');
@@ -222,7 +240,11 @@ const ToastEditor = forwardRef((props, ref) => {
   const updateEditorContent = (newContent: string) => {
     const currentContent = editorRef?.current?.getMarkdown();
 
-    editorRef?.current?.setMarkdown(`${currentContent}\n${newContent}`);
+    if (currentContent) {
+      editorRef?.current?.setMarkdown(`${currentContent}\n${newContent}`);
+    } else {
+      editorRef?.current?.setMarkdown(newContent);
+    }
   };
 
   const handleEditorChange = () => {
@@ -284,6 +306,13 @@ const ToastEditor = forwardRef((props, ref) => {
         </div>
       </div>
       {visible && <EditorModal visible={visible} setVisible={setVisible} />}
+      {templateModalVisible && (
+        <TemplateModal
+          visible={templateModalVisible}
+          setVisible={setTemplateModalVisible}
+          onSubmit={updateEditorContent}
+        />
+      )}
     </>
   );
 });
