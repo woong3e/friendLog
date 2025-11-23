@@ -68,7 +68,6 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
       rating: rating,
       comment: comment,
       nickname: nickname,
-      avatar_image_url: avatarImageUrl,
     };
 
     const { data, error } = await supabase
