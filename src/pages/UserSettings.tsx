@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useProfileStore } from '../stores/useProfileStore';
+import imageCompression from 'browser-image-compression';
 
 const UserSettings = () => {
   const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
@@ -44,8 +45,6 @@ const UserSettings = () => {
     }
   }, [acceptedFiles]);
 
-  // Profiles
-  // Profiles
   const fetchUserProfiles = async () => {
     if (!session?.user?.id) return;
     
@@ -70,22 +69,35 @@ const UserSettings = () => {
   const uploadAvatarImage = async (file: File) => {
     if (file.type == undefined) return;
 
-    const ext = file.type.split('/')[1];
-    const fileName = `${Date.now()}.${ext}`;
+    const options = {
+  maxSizeMB: 0.2,
+  maxWidthOrHeight: 1280,
+  useWebWorker: true,
+  fileType: "image/webp",
+  initialQuality: 0.7
+}
 
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(`avatar-image/${fileName}`, file, {
-        contentType: file.type,
-        upsert: true,
-      });
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const ext = compressedFile.type.split('/')[1];
+      const fileName = `${Date.now()}.${ext}`;
 
-    if (error) {
-      console.error('upload Failed', error);
-    } else {
-      console.log('upload success', data);
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(`avatar-image/${fileName}`, compressedFile, {
+          contentType: compressedFile.type,
+          upsert: true,
+        });
+
+      if (error) {
+        console.error('upload Failed', error);
+      } else {
+        console.log('upload success', data);
+      }
+      return getAvatarImageUrl(`avatar-image/${fileName}`);
+    } catch (error) {
+      console.log(error);
     }
-    return getAvatarImageUrl(`avatar-image/${fileName}`);
   };
 
   const { mutate, isPending } = useMutation({
@@ -94,7 +106,6 @@ const UserSettings = () => {
       if (!url) return;
       setAvatarImageUrl(url);
       
-      // Update profile in DB
       const { error } = await supabase
         .from('profiles')
         .update({ avatar_image_url: url })

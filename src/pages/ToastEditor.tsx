@@ -14,6 +14,7 @@ import supabase from '../utils/supabase';
 import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
 import { useNavigate, useLocation } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
 
 const ToastEditor = forwardRef((props, ref) => {
   const navigate = useNavigate();
@@ -227,14 +228,28 @@ const ToastEditor = forwardRef((props, ref) => {
     blob: Blob,
     callback: (url: string, alt: string) => void
   ) => {
-    const ext = blob.type.split('/')[1];
-    const fileName = `${Date.now()}.${ext}`;
-    const uploadedFileName = await uploadImage(blob, fileName);
-    if (!uploadedFileName) return;
-    const publicUrl = getImageUrl(uploadedFileName);
-    setImageUrlArr([...imageUrlArr, publicUrl]);
-    callback(publicUrl, fileName);
-    console.log(imageUrlArr);
+    const file = blob as File;
+    const options = {
+      maxSizeMB: 0.2,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true,
+      fileType: 'image/webp',
+      initialQuality: 0.7,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const ext = compressedFile.type.split('/')[1];
+      const fileName = `${Date.now()}.${ext}`;
+      const uploadedFileName = await uploadImage(compressedFile, fileName);
+      if (!uploadedFileName) return;
+      const publicUrl = getImageUrl(uploadedFileName);
+      setImageUrlArr([...imageUrlArr, publicUrl]);
+      callback(publicUrl, fileName);
+      console.log(imageUrlArr);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateEditorContent = (newContent: string) => {

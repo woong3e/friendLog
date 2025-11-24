@@ -11,6 +11,7 @@ import { usePostStore } from '../stores/usePostStore';
 import supabase from '../utils/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
+import imageCompression from 'browser-image-compression';
 
 const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
@@ -80,13 +81,26 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   };
 
   const uploadThumbnail = async (file: File) => {
-    const ext = file.type.split('/')[1];
-    const fileName = `${Date.now()}.${ext}`;
-    await supabase.storage.from(bucket).upload(`thumbnail/${fileName}`, file, {
-      contentType: file.type,
-      upsert: true,
-    });
-    getThumbnailUrl(`thumbnail/${fileName}`);
+    const options = {
+      maxSizeMB: 0.2,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true,
+      fileType: 'image/webp',
+      initialQuality: 0.7,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const ext = compressedFile.type.split('/')[1];
+      const fileName = `${Date.now()}.${ext}`;
+      await supabase.storage.from(bucket).upload(`thumbnail/${fileName}`, compressedFile, {
+        contentType: compressedFile.type,
+        upsert: true,
+      });
+      getThumbnailUrl(`thumbnail/${fileName}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getThumbnailUrl = (filePath: string) => {
