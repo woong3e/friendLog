@@ -12,6 +12,7 @@ import supabase from '../utils/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import imageCompression from 'browser-image-compression';
+import { extractImageUrlsFromMarkdown } from '../utils/imageUtils';
 
 const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
@@ -159,6 +160,17 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     setContentSummary(e.target.value);
   };
 
+  const cleanupUnusedImages = async () => {
+    const usedUrls = extractImageUrlsFromMarkdown(content);
+    const unusedUrls = imageUrlArr.filter((url) => !usedUrls.includes(url));
+
+    for (const url of unusedUrls) {
+      await deleteImageFromStorage(url);
+    }
+
+    return usedUrls;
+  };
+
   const postData = {
     title: title,
     content: content,
@@ -180,9 +192,12 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       return;
     }
 
+    const finalImageUrls = await cleanupUnusedImages();
+    const finalPostData = { ...postData, image_url: JSON.stringify(finalImageUrls) };
+
     const { data, error } = await supabase
       .from('posts')
-      .insert([postData])
+      .insert([finalPostData])
       .single();
 
     if (error) {
@@ -204,9 +219,12 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       return;
     }
 
+    const finalImageUrls = await cleanupUnusedImages();
+    const finalPostData = { ...postData, image_url: JSON.stringify(finalImageUrls) };
+
     const { data, error } = await supabase
       .from('posts')
-      .update(postData)
+      .update(finalPostData)
       .eq('id', Number(id));
 
     if (error) {
