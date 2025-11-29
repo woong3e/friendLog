@@ -110,6 +110,46 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     return data.publicUrl;
   };
 
+  const deleteImageFromStorage = async (url: string) => {
+    if (!url) return;
+    try {
+      const path = url.split(`${bucket}/`)[1];
+      if (path) {
+        const { data, error } = await supabase.storage.from(bucket).remove([path]);
+        if (error) {
+          console.error('Error deleting image:', error);
+        } else {
+          console.log('Image deleted successfully:', data);
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting image', error);
+    }
+  };
+
+  const removeThumbnail = async () => {
+    await deleteImageFromStorage(thumbnailUrl);
+    setThumbnailUrl('');
+  };
+
+  const reuploadThumbnail = () => {
+    const fileInput = document.getElementById('reupload-input');
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const onReuploadChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        await deleteImageFromStorage(thumbnailUrl);
+        await onUploadThumbnail(file);
+      }
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: false,
     onDrop,
@@ -190,19 +230,22 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
         <div className="flex flex-col items-center justify-center w-full p-1 m-1 bg-blue-950 h-2/3">
           {thumbnailUrl && (
             <div className="flex justify-end w-full gap-5">
+              <input
+                id="reupload-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onReuploadChange}
+              />
               <button
                 className="cursor-pointer"
-                onClick={() => {
-                  console.log('재업로드');
-                }}
+                onClick={reuploadThumbnail}
               >
                 재업로드
               </button>
               <button
                 className="cursor-pointer"
-                onClick={() => {
-                  console.log('제거');
-                }}
+                onClick={removeThumbnail}
               >
                 제거
               </button>
