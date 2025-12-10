@@ -47,7 +47,7 @@ const Header = () => {
         to="/"
         className="flex justify-center items-center text-xl hover:cursor-default h-full"
       >
-        <p className="hover:cursor-pointer text-2xl ml-15">FriendLog</p>
+        <p className="hover:cursor-pointer text-2xl ml-15">FRIENDLOG</p>
       </Link>
       <div className="flex mr-2 h-full justify-end">
         <div className="flex items-center mr-2" ref={avatarMenuRef}>

@@ -12,6 +12,7 @@ export interface Post {
 
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '../styles/custom-toast-editor-dark.css';
+import { Helmet } from 'react-helmet-async';
 import supabase from '../utils/supabase';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -41,6 +42,8 @@ const ToastViewer = () => {
     nickname,
     created_at,
     isEdit,
+    contentSummary,
+    thumbnailUrl,
     setTitle,
     setContent,
     setImageUrlArr,
@@ -135,6 +138,22 @@ const ToastViewer = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{title ? `${title} - FRIENDLOG` : 'FRIENDLOG'}</title>
+        <meta property="og:title" content={title || 'FRIENDLOG'} />
+        <meta
+          property="og:description"
+          content={contentSummary || 'FRIENDLOG'}
+        />
+        <meta
+          property="og:image"
+          content={
+            thumbnailUrl ||
+            'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/1756556110914.jpg'
+          }
+        />
+        <meta property="og:url" content={window.location.href} />
+      </Helmet>
       <div
         className="flex flex-col px-2 mx-auto md:w-3xl my-3 relative"
       >
