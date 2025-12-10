@@ -27,7 +27,6 @@ const Main = () => {
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      // If the last page has fewer than 8 items, there are no more pages.
       if (lastPage.length < 8) return undefined;
       return allPages.length;
     },
@@ -74,7 +73,6 @@ const Main = () => {
           ))
         )}
       </div>
-      {/* Sentinel element for infinite scroll */}
       <div ref={observerRef} className="h-10 flex justify-center items-center mt-4">
         {isFetchingNextPage && <p>Loading more...</p>}
       </div>

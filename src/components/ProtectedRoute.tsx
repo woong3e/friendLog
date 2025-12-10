@@ -5,7 +5,7 @@ const ProtectedRoute = () => {
   const { session, isInitialized } = useAuthStore();
 
   if (!isInitialized) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   if (!session) {
