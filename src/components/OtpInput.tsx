@@ -85,7 +85,9 @@ const OtpInput = () => {
               id={`code-${i + 1}`}
               type="text"
               maxLength={1}
-              ref={(el) => (inputRefs.current[i] = el)}
+              ref={(el) => {
+                inputRefs.current[i] = el;
+              }}
               value={otpArr[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               onPaste={handlePaste}
