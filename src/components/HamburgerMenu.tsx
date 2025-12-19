@@ -15,7 +15,7 @@ const HamburgerMenu = ({
   });
 
   return (
-    <div className="relative flex ml-2 h-full" ref={hamburgerMenuRef}>
+    <div className="relative flex ml-2 h-full z-50" ref={hamburgerMenuRef}>
       <button onClick={toggleHamburgerMenu}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +28,37 @@ const HamburgerMenu = ({
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            d="M3.75 6.75h16.5"
+            className={`
+    transition-transform duration-300 ease-in-out
+    origin-center
+    [transform-box:fill-box]
+    ${isHamburgerMenuOpen ? 'rotate-45 translate-y-[5.25px]' : ''}
+  `}
+          />
+
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 12h16.5"
+            className={`
+    transition-opacity duration-300 ease-in-out
+    origin-center
+    [transform-box:fill-box]
+    ${isHamburgerMenuOpen ? 'opacity-0' : 'opacity-100'}
+  `}
+          />
+
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 17.25h16.5"
+            className={`
+    transition-transform duration-300 ease-in-out
+    origin-center
+    [transform-box:fill-box]
+    ${isHamburgerMenuOpen ? '-rotate-45 -translate-y-[5.25px]' : ''}
+  `}
           />
         </svg>
       </button>

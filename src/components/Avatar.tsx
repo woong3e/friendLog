@@ -7,12 +7,13 @@ import { useProfileStore } from '../stores/useProfileStore';
 const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
   const navigate = useNavigate();
   const { avatarImageUrl, setAvatarImageUrl, setNickname } = useProfileStore();
+  const isOpen = isAvatarMenuOpen;
   const { session } = useAuthStore();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!session?.user?.id) return;
-      
+
       const { data, error } = await supabase
         .from('profiles')
         .select('avatar_image_url, nickname')
@@ -24,7 +25,7 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
         setNickname(data.nickname);
       }
     };
-    
+
     fetchUserProfile();
   }, [session]);
 
@@ -55,7 +56,9 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="w-5 h-10"
+              className={`w-5 h-10 transition-transform duration-200 ${
+                isOpen ? 'transform rotate-180' : ''
+              }`}
             >
               <path
                 strokeLinecap="round"
