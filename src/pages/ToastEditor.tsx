@@ -24,7 +24,8 @@ const ToastEditor = forwardRef((props, ref) => {
   const editorContentRef = useRef('');
   const isDark = useThemeStore((state) => state.isDark);
   const [visible, setVisible] = useState<boolean>(false);
-  const [templateModalVisible, setTemplateModalVisible] = useState<boolean>(false);
+  const [templateModalVisible, setTemplateModalVisible] =
+    useState<boolean>(false);
 
   const {
     title,
@@ -40,6 +41,7 @@ const ToastEditor = forwardRef((props, ref) => {
     setCreated_At,
     setContentSummary,
     setEmail,
+    setEventDate,
   } = usePostStore();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -71,14 +73,22 @@ const ToastEditor = forwardRef((props, ref) => {
         initialEditType: 'markdown',
         hideModeSwitch: true,
         toolbarItems: [
-          ['heading', 'bold', 'strike','hr','link',{
+          [
+            'heading',
+            'bold',
+            'strike',
+            'hr',
+            'link',
+            {
               el: UploadImagesBtn(),
               tooltip: '이미지 업로드하기',
             },
             {
               el: TemplateBtn(),
               tooltip: '템플릿 삽입',
-            },'scrollSync'],
+            },
+            'scrollSync',
+          ],
         ],
         hooks: {
           addImageBlobHook: onUploadImage,
@@ -125,6 +135,7 @@ const ToastEditor = forwardRef((props, ref) => {
       setCreated_At(data.created_at);
       setContentSummary(data.content_summary);
       setEmail((data as any)?.email);
+      setEventDate((data as any).event_date);
       setIsEdit(true);
       if (editorRef.current) {
         editorRef.current.setMarkdown(data.content);
@@ -150,7 +161,6 @@ const ToastEditor = forwardRef((props, ref) => {
 
     return button;
   };
-
 
   const UploadImagesBtn = () => {
     const fileInput = document.createElement('input');

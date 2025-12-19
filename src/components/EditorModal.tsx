@@ -29,6 +29,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     setThumbnailUrl,
     setContentSummary,
     setNickname,
+    eventDate,
   } = usePostStore();
   const { session } = useAuthStore();
   const location = useLocation();
@@ -43,7 +44,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
           .select('nickname')
           .eq('id', session.user.id)
           .single();
-        
+
         if (data?.nickname) {
           setNickname(data.nickname);
         } else {
@@ -94,10 +95,12 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       const compressedFile = await imageCompression(file, options);
       const ext = compressedFile.type.split('/')[1];
       const fileName = `${Date.now()}.${ext}`;
-      await supabase.storage.from(bucket).upload(`thumbnail/${fileName}`, compressedFile, {
-        contentType: compressedFile.type,
-        upsert: true,
-      });
+      await supabase.storage
+        .from(bucket)
+        .upload(`thumbnail/${fileName}`, compressedFile, {
+          contentType: compressedFile.type,
+          upsert: true,
+        });
       getThumbnailUrl(`thumbnail/${fileName}`);
     } catch (error) {
       console.log(error);
@@ -116,7 +119,9 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     try {
       const path = url.split(`${bucket}/`)[1];
       if (path) {
-        const { data, error } = await supabase.storage.from(bucket).remove([path]);
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .remove([path]);
         if (error) {
           console.error('Error deleting image:', error);
         } else {
@@ -140,7 +145,9 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     }
   };
 
-  const onReuploadChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onReuploadChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
@@ -179,6 +186,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     content_summary: contentSummary,
     nickname: nickname,
     email: session?.user?.email,
+    event_date: eventDate,
   };
 
   const handlePostPublish = async () => {
@@ -193,7 +201,10 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     }
 
     const finalImageUrls = await cleanupUnusedImages();
-    const finalPostData = { ...postData, image_url: JSON.stringify(finalImageUrls) };
+    const finalPostData = {
+      ...postData,
+      image_url: JSON.stringify(finalImageUrls),
+    };
 
     const { data, error } = await supabase
       .from('posts')
@@ -220,7 +231,10 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     }
 
     const finalImageUrls = await cleanupUnusedImages();
-    const finalPostData = { ...postData, image_url: JSON.stringify(finalImageUrls) };
+    const finalPostData = {
+      ...postData,
+      image_url: JSON.stringify(finalImageUrls),
+    };
 
     const { data, error } = await supabase
       .from('posts')
@@ -255,16 +269,10 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
                 className="hidden"
                 onChange={onReuploadChange}
               />
-              <button
-                className="cursor-pointer"
-                onClick={reuploadThumbnail}
-              >
+              <button className="cursor-pointer" onClick={reuploadThumbnail}>
                 재업로드
               </button>
-              <button
-                className="cursor-pointer"
-                onClick={removeThumbnail}
-              >
+              <button className="cursor-pointer" onClick={removeThumbnail}>
                 제거
               </button>
             </div>

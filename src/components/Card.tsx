@@ -19,7 +19,7 @@ const Card = ({ post }) => {
         .select('avatar_image_url, nickname')
         .eq('email', post.email)
         .single();
-      
+
       if (data) {
         setAvatarUrl(data.avatar_image_url);
         if (data.nickname) {
@@ -52,11 +52,11 @@ const Card = ({ post }) => {
             const hours = dur.hours().toString().padStart(2, '0');
             const minutes = dur.minutes().toString().padStart(2, '0');
             const seconds = dur.seconds().toString().padStart(2, '0');
-            
+
             if (days > 0) {
-                setTimeLeft(`${days}일 ${hours}:${minutes}:${seconds}`);
+              setTimeLeft(`${days}일 ${hours}:${minutes}:${seconds}`);
             } else {
-                setTimeLeft(`${hours}:${minutes}:${seconds}`);
+              setTimeLeft(`${hours}:${minutes}:${seconds}`);
             }
           }
         };
@@ -70,22 +70,20 @@ const Card = ({ post }) => {
   }, [post.content]);
 
   return (
-    <div
-      className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain"
-    >
+    <div className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain">
       {isMeetingFuture && timeLeft ? (
         <div className="w-full h-50 rounded-t-lg bg-black/80 flex flex-col items-center justify-center text-white border-b-1">
-            <p className="text-sm text-gray-300 mb-1">모임 예정</p>
-            <p className="font-bold text-2xl tracking-wider">{timeLeft}</p>
+          <p className="text-sm text-gray-300 mb-1">모임 예정</p>
+          <p className="font-bold text-2xl tracking-wider">{timeLeft}</p>
         </div>
       ) : (
         <img
-            className="w-full h-50 rounded-t-lg object-cover object-center border-b-1"
-            src={post.thumbnail_url}
-            onError={(e) => {
+          className="w-full h-50 rounded-t-lg object-cover object-center border-b-1"
+          src={post.thumbnail_url}
+          onError={(e) => {
             e.currentTarget.src =
-                'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/thumbnail-default-light.png';
-            }}
+              'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/thumbnail-default-light.png';
+          }}
         />
       )}
       <div className="pt-4 pb-2">
@@ -96,7 +94,7 @@ const Card = ({ post }) => {
           {post.content_summary}
         </p>
         <p className="my-3 py-1 text-sm border-b-1 font-extralight px-4 flex justify-end">
-          {dayjs(post.created_at).format('YYYY-MM-DD')}
+          {dayjs(post.event_date).format('YYYY-MM-DD')}
         </p>
         <div className="flex justify-between items-end px-4 mb-1">
           <div className="flex items-center gap-2">

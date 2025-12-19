@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom';
 import { useState, useEffect } from 'react';
+import { usePostStore } from '../stores/usePostStore';
 
 interface TemplateModalProps {
   visible: boolean;
@@ -7,7 +8,11 @@ interface TemplateModalProps {
   onSubmit: (template: string) => void;
 }
 
-const TemplateModal = ({ visible, setVisible, onSubmit }: TemplateModalProps) => {
+const TemplateModal = ({
+  visible,
+  setVisible,
+  onSubmit,
+}: TemplateModalProps) => {
   const [topic, setTopic] = useState('');
   const [location, setLocation] = useState('');
   const [time, setTime] = useState('');
@@ -22,28 +27,33 @@ const TemplateModal = ({ visible, setVisible, onSubmit }: TemplateModalProps) =>
     }
   }, [visible]);
 
+  const { setEventDate } = usePostStore();
+
   const handleClose = () => {
     setVisible(false);
   };
 
   const handleSubmit = () => {
-    const formattedTime = time ? time.replace('T', ' ') : '';
-    const template = `### 주제: ${topic}\n### 장소: ${location}\n### 시간: ${formattedTime}\n### 참여자: ${participants}`;
+    const eventDate = time ? time.replace('T', ' ') : '';
+    const template = `### 주제: ${topic}\n### 장소: ${location}\n### 시간: ${eventDate}\n### 참여자: ${participants}`;
     onSubmit(template);
+    setEventDate(time || null);
     handleClose();
   };
 
   if (!visible) return null;
 
   return createPortal(
-    <div
-      className="fixed top-0 left-0 w-full h-dvh z-[1100] flex justify-center items-center bg-black/50"
-    >
+    <div className="fixed top-0 left-0 w-full h-dvh z-[1100] flex justify-center items-center bg-black/50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-sm mx-4 shadow-xl flex flex-col gap-4">
-        <h2 className="text-xl font-bold dark:text-white mb-2">모임 정보 입력</h2>
-        
+        <h2 className="text-xl font-bold dark:text-white mb-2">
+          모임 정보 입력
+        </h2>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">주제</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            주제
+          </label>
           <input
             type="text"
             className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none"
@@ -54,7 +64,9 @@ const TemplateModal = ({ visible, setVisible, onSubmit }: TemplateModalProps) =>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">장소</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            장소
+          </label>
           <input
             type="text"
             className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none"
@@ -65,7 +77,9 @@ const TemplateModal = ({ visible, setVisible, onSubmit }: TemplateModalProps) =>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">시간</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            시간
+          </label>
           <input
             type="datetime-local"
             className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none"
@@ -76,7 +90,9 @@ const TemplateModal = ({ visible, setVisible, onSubmit }: TemplateModalProps) =>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">참여자</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            참여자
+          </label>
           <input
             type="text"
             className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none"
