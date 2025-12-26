@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import supabase from '../utils/supabase';
 
 dayjs.extend(duration);
+import { useAuthStore } from '../stores/useAuthStore';
 
 const Card = ({ post }) => {
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [isMeetingFuture, setIsMeetingFuture] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [currentNickname, setCurrentNickname] = useState<string>(post.nickname);
+  const [hasRated, setHasRated] = useState(false);
+  const session = useAuthStore((state) => state.session);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,6 +32,31 @@ const Card = ({ post }) => {
     };
     fetchProfile();
   }, [post.email]);
+
+  useEffect(() => {
+    const checkRating = async () => {
+      if (!session?.user?.id || !post.id) {
+        setHasRated(false);
+        return;
+      }
+
+      const { data } = await supabase
+        .from('ratings')
+        .select('rating')
+        .eq('post_id', post.id)
+        .eq('user_id', session.user.id)
+        .gte('rating', 0.5)
+        .maybeSingle();
+
+      if (data) {
+        setHasRated(true);
+      } else {
+        setHasRated(false);
+      }
+    };
+
+    checkRating();
+  }, [post.id, session?.user?.id]);
 
   useEffect(() => {
     const match = post.content.match(/### 시간:\s*(.+)/);
@@ -70,7 +98,12 @@ const Card = ({ post }) => {
   }, [post.content]);
 
   return (
-    <div className="w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain">
+    <div className="relative w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain">
+      {hasRated && (
+        <div className="absolute top-2 right-2 z-10 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full dark:bg-green-900 dark:text-green-300 shadow opacity-90">
+          ✅ 평가완료
+        </div>
+      )}
       {isMeetingFuture && timeLeft ? (
         <div className="w-full h-50 rounded-t-lg bg-black/80 flex flex-col items-center justify-center text-white border-b-1">
           <p className="text-sm text-gray-300 mb-1">모임 예정</p>
