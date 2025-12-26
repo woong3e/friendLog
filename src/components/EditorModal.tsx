@@ -74,7 +74,6 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   if (!visible && !isClosing) return null;
 
   const onDrop = useCallback((acceptedFiles) => {
-    console.log(acceptedFiles);
     onUploadThumbnail(acceptedFiles[0]);
   }, []);
 
@@ -103,7 +102,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
         });
       getThumbnailUrl(`thumbnail/${fileName}`);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -124,8 +123,6 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
           .remove([path]);
         if (error) {
           console.error('Error deleting image:', error);
-        } else {
-          console.log('Image deleted successfully:', data);
         }
       }
     } catch (error) {
@@ -206,7 +203,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       image_url: JSON.stringify(finalImageUrls),
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('posts')
       .insert([finalPostData])
       .single();
@@ -214,7 +211,6 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     if (error) {
       console.error('Error Message: ', error);
     } else {
-      console.log(data);
       navigate('/');
     }
   };
@@ -236,7 +232,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       image_url: JSON.stringify(finalImageUrls),
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('posts')
       .update(finalPostData)
       .eq('id', Number(id));
@@ -244,7 +240,6 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     if (error) {
       console.error('Error Message: ', error);
     } else {
-      console.log(data);
       navigate('/');
     }
   };

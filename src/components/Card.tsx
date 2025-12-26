@@ -154,7 +154,7 @@ const Card = ({ post }) => {
             )}
             <p className="text-sm">{currentNickname}</p>
           </div>
-          <p className="text-sm flex">
+          <div className="text-sm flex">
             <div className="flex justify-center items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -172,7 +172,7 @@ const Card = ({ post }) => {
               </svg>
             </div>
             :{post.rating?.toFixed(2)}
-          </p>
+          </div>
         </div>
       </div>
     </div>

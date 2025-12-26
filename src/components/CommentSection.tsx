@@ -59,18 +59,6 @@ const CommentSection = () => {
     fetchRating();
   }, [post_id]);
 
-  const fetchUserMeta = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    console.log(user);
-    return user;
-  };
-
-  useEffect(() => {
-    fetchUserMeta();
-  }, []);
-
   return (
     <section className="py-8 antialiased bg-white dark:bg-gray-900 lg:py-16">
       <div className="max-w-2xl mx-auto">

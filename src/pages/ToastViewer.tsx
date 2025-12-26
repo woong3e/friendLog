@@ -60,14 +60,11 @@ const ToastViewer = () => {
 
   useEffect(() => {
     setIsEdit(false);
-    console.log(session?.user.email);
   }, []);
 
   useEffect(() => {
     getPosts();
   }, [id]);
-
-
 
   useEffect(() => {
     if (divRef.current && title) {
@@ -119,20 +116,20 @@ const ToastViewer = () => {
     const fetchAuthorNickname = async () => {
       const email = usePostStore.getState().email;
       if (!email) return;
-      
+
       const { data } = await supabase
         .from('profiles')
         .select('nickname')
         .eq('email', email)
         .single();
-      
+
       if (data?.nickname) {
         setAuthorNickname(data.nickname);
       }
     };
-    
+
     if (usePostStore.getState().email) {
-        fetchAuthorNickname();
+      fetchAuthorNickname();
     }
   }, [usePostStore.getState().email]);
 
@@ -154,9 +151,7 @@ const ToastViewer = () => {
         />
         <meta property="og:url" content={window.location.href} />
       </Helmet>
-      <div
-        className="flex flex-col px-2 mx-auto md:w-3xl my-3 relative"
-      >
+      <div className="flex flex-col px-2 mx-auto md:w-3xl my-3 relative">
         <div>
           <h1 className="flex">
             <p className="text-4xl font-bold">{title}</p>

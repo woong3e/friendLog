@@ -66,19 +66,10 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
   };
 
   const ratingChanged = async (newRating) => {
-    console.log(newRating);
     setRating(newRating);
   };
 
   const handleSubmitReview = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(
-      'submit triggered',
-      rating,
-      comment,
-      post_id,
-      user_id,
-      nickname
-    );
     e.preventDefault();
     const ratingData = {
       post_id: post_id,
@@ -95,8 +86,6 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
 
     if (error) {
       console.error('Error Message: ', error);
-    } else {
-      console.log(data);
     }
 
     window.location.reload();
@@ -106,7 +95,6 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
     target: { value: SetStateAction<string> };
   }) => {
     setComment(e.target.value);
-    console.log(e.target.value);
   };
 
   return createPortal(

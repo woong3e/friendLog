@@ -176,7 +176,6 @@ const ToastEditor = forwardRef((props, ref) => {
         if (file.type.startsWith('image/')) {
           await new Promise<void>((resolve) => {
             onUploadImage(file, (url) => {
-              console.log('업로드완료', url);
               const markdownImageLink = `![${file.name}](${url})`;
               updateEditorContent(markdownImageLink);
               resolve();
@@ -224,7 +223,6 @@ const ToastEditor = forwardRef((props, ref) => {
       if (file.type.startsWith('image/')) {
         await new Promise<void>((resolve, reject) => {
           onUploadImage(file, (url, alt) => {
-            console.log('업로드완료', url);
             const markdownImageLink = `![${file.name}](${url})`;
             updateEditorContent(markdownImageLink);
             resolve();
@@ -256,9 +254,8 @@ const ToastEditor = forwardRef((props, ref) => {
       const publicUrl = getImageUrl(uploadedFileName);
       setImageUrlArr([...imageUrlArr, publicUrl]);
       callback(publicUrl, fileName);
-      console.log(imageUrlArr);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -274,7 +271,6 @@ const ToastEditor = forwardRef((props, ref) => {
 
   const handleEditorChange = () => {
     setContent(editorRef.current?.getMarkdown());
-    console.log(content);
   };
 
   return (

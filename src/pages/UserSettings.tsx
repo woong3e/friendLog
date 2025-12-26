@@ -21,16 +21,8 @@ const UserSettings = () => {
   const { session } = useAuthStore();
 
   useEffect(() => {
-    console.log(session);
-  }, []);
-
-  useEffect(() => {
-    const fetchProfiles = async () => {
-      const user = await fetchUserProfiles();
-      console.log(user);
-    };
-    fetchProfiles();
-  }, []);
+    fetchUserProfiles();
+  }, [session]);
 
   useEffect(() => {
     if (acceptedFiles.length > 0) {
@@ -50,7 +42,6 @@ const UserSettings = () => {
     if (error) {
       console.error('Error fetching profile:', error);
     } else if (data) {
-      console.log('fetch user profiles', data);
       setNickname(data.nickname);
       setAvatarImageUrl(data.avatar_image_url);
       setEditedNickname(data.nickname);
@@ -84,12 +75,10 @@ const UserSettings = () => {
 
       if (error) {
         console.error('upload Failed', error);
-      } else {
-        console.log('upload success', data);
       }
       return getAvatarImageUrl(`avatar-image/${fileName}`);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -122,8 +111,6 @@ const UserSettings = () => {
       .remove([`avatar-image/${fileName}`]);
     if (error) {
       console.error('삭제 실패:', error);
-    } else {
-      console.log('삭제 성공:', data);
     }
   };
 
