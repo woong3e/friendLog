@@ -151,7 +151,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
                   id="comment"
                   rows={3}
                   className="w-full px-0 text-base text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-900"
-                  placeholder="한줄평을 남겨주세요.&#10;내가 준 점수는 표시되지 않습니다.&#10;한줄평은 게시글 아래에 표기됩니다."
+                  placeholder="한줄평을 남겨주세요.&#10;한줄평은 게시글 아래에 표기됩니다."
                   onChange={handleCommentChange}
                 ></textarea>
               </div>

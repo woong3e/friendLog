@@ -82,11 +82,26 @@ const CommentSection = () => {
             <footer className="flex items-center justify-between mb-2">
               <div className="flex items-center">
                 <p className="inline-flex items-center mr-3 text-sm font-semibold text-gray-900 dark:text-white">
-                  <img
-                    className="w-6 h-6 mr-2 rounded-full object-cover"
-                    src={item.profiles?.avatar_image_url || 'https://via.placeholder.com/150'}
-                    alt={item.profiles?.nickname}
-                  />
+                  {item.profiles?.avatar_image_url ? (
+                    <img
+                      className="w-6 h-6 mr-2 rounded-full object-cover"
+                      src={item.profiles.avatar_image_url}
+                      alt={item.profiles.nickname}
+                    />
+                  ) : (
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6 mr-2 rounded-full"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  )}
                   {item.profiles?.nickname || 'Unknown'}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
