@@ -116,6 +116,7 @@ const Card = ({ post }) => {
           onError={(e) => {
             e.currentTarget.src =
               'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/thumbnail-default-light.png';
+            e.currentTarget.style.objectFit = 'contain';
           }}
         />
       )}
