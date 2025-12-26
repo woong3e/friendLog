@@ -52,7 +52,7 @@ const Sort = ({ currentSort, onSortChange }: SortProps) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 w-40 mt-2 origin-top-left bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 animate-fadeIn">
+        <div className="absolute left-0 z-50 w-40 mt-2 origin-top-left bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 animate-fadeIn">
           <div className="py-1">
             {options.map((option) => (
               <button
