@@ -15,21 +15,14 @@ const UserSettings = () => {
     noKeyboard: true,
   });
 
-  const {
-    nickname,
-    email,
-    avatarImageUrl,
-    setNickname,
-    setEmail,
-    setAvatarImageUrl,
-  } = useProfileStore();
+  const { nickname, avatarImageUrl, setNickname, setAvatarImageUrl } =
+    useProfileStore();
 
   const { session } = useAuthStore();
 
   useEffect(() => {
     console.log(session);
   }, []);
-
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -47,7 +40,7 @@ const UserSettings = () => {
 
   const fetchUserProfiles = async () => {
     if (!session?.user?.id) return;
-    
+
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -70,12 +63,12 @@ const UserSettings = () => {
     if (file.type == undefined) return;
 
     const options = {
-  maxSizeMB: 0.2,
-  maxWidthOrHeight: 1280,
-  useWebWorker: true,
-  fileType: "image/webp",
-  initialQuality: 0.7
-}
+      maxSizeMB: 0.2,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true,
+      fileType: 'image/webp',
+      initialQuality: 0.7,
+    };
 
     try {
       const compressedFile = await imageCompression(file, options);
@@ -105,12 +98,12 @@ const UserSettings = () => {
     onSuccess: async (url: string) => {
       if (!url) return;
       setAvatarImageUrl(url);
-      
+
       const { error } = await supabase
         .from('profiles')
         .update({ avatar_image_url: url })
         .eq('id', session.user.id);
-        
+
       if (error) console.error('Error updating avatar in profile:', error);
     },
   });
@@ -135,8 +128,18 @@ const UserSettings = () => {
   };
 
   const handleRemove = async () => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ avatar_image_url: null })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
     await removeAvatarImage();
-    setAvatarImageUrl('');
+    setAvatarImageUrl(null);
   };
 
   //edit nickname
@@ -147,7 +150,7 @@ const UserSettings = () => {
         .update({ nickname: editedNickname })
         .eq('id', session.user.id)
         .select();
-        
+
       if (error) {
         console.error(error);
         throw error;

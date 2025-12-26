@@ -8,6 +8,7 @@ import { useState, useEffect, SetStateAction } from 'react';
 import ReactStars from 'react-rating-stars-component';
 import { useParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
+import { useProfileStore } from '../stores/useProfileStore';
 import supabase from '../utils/supabase';
 
 const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
@@ -15,10 +16,27 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
   const post_id = parseInt(id as string | null);
   const session = useAuthStore((state) => state.session);
   const user_id = session?.user.id;
+  const { nickname, setNickname } = useProfileStore();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-  const nickname = session?.user.user_metadata.nickname;
-  const avatarImageUrl = session?.user.user_metadata.avatarImageUrl;
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (nickname || !user_id) return;
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('nickname')
+        .eq('id', user_id)
+        .single();
+
+      if (data?.nickname) {
+        setNickname(data.nickname);
+      }
+    };
+
+    fetchProfile();
+  }, [user_id, nickname, setNickname]);
 
   useEffect(() => {
     if (visible) {
