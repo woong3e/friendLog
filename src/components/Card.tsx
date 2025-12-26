@@ -132,12 +132,25 @@ const Card = ({ post }) => {
         <div className="flex justify-between items-end px-4 mb-1">
           <div className="flex items-center gap-2">
             <p className="text-sm">by</p>
-            {avatarUrl && (
+            {avatarUrl ? (
               <img
                 src={avatarUrl}
                 alt="avatar"
                 className="w-6 h-6 rounded-full object-cover"
               />
+            ) : (
+              <svg
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 rounded-full"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
             )}
             <p className="text-sm">{currentNickname}</p>
           </div>
