@@ -237,20 +237,26 @@ const ToastEditor = forwardRef((props, ref) => {
     callback: (url: string, alt: string) => void
   ) => {
     const file = blob as File;
-    const options = {
-      maxSizeMB: 0.2,
-      maxWidthOrHeight: 1280,
-      useWebWorker: true,
-      fileType: 'image/webp',
-      initialQuality: 0.7,
-    };
 
     try {
-      const compressedFile = await imageCompression(file, options);
-      const ext = compressedFile.type.split('/')[1];
+      let uploadFile: File | Blob = file;
+
+      if (file.type !== 'image/gif') {
+        uploadFile = await imageCompression(file, {
+          maxSizeMB: 0.2,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+          fileType: 'image/webp',
+          initialQuality: 0.7,
+        });
+      }
+
+      const ext = uploadFile.type.split('/')[1];
       const fileName = `${Date.now()}.${ext}`;
-      const uploadedFileName = await uploadImage(compressedFile, fileName);
+
+      const uploadedFileName = await uploadImage(uploadFile, fileName);
       if (!uploadedFileName) return;
+
       const publicUrl = getImageUrl(uploadedFileName);
       setImageUrlArr([...imageUrlArr, publicUrl]);
       callback(publicUrl, fileName);
