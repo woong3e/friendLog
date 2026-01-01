@@ -98,7 +98,7 @@ const Card = ({ post }) => {
   }, [post.content]);
 
   return (
-    <div className="relative w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain">
+    <div className="relative w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 object-contain transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:z-10 cursor-pointer">
       {hasRated && (
         <div className="absolute top-2 right-2 z-10 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full dark:bg-green-900 dark:text-green-300 shadow opacity-90">
           ✅ 평가완료
