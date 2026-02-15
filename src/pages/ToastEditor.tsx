@@ -37,7 +37,6 @@ const ToastEditor = forwardRef((props, ref) => {
     setImageUrlArr,
     setIsEdit,
     setThumbnailUrl,
-    setNickname,
     setCreated_At,
     setContentSummary,
     setEmail,
@@ -131,7 +130,7 @@ const ToastEditor = forwardRef((props, ref) => {
       setContent(data.content);
       setImageUrlArr(data.image_url);
       setThumbnailUrl(data.thumbnail_url);
-      setNickname(data.nickname);
+
       setCreated_At(data.created_at);
       setContentSummary(data.content_summary);
       setEmail((data as any)?.email);
@@ -234,7 +233,7 @@ const ToastEditor = forwardRef((props, ref) => {
 
   const onUploadImage = async (
     blob: Blob,
-    callback: (url: string, alt: string) => void
+    callback: (url: string, alt: string) => void,
   ) => {
     const file = blob as File;
 

@@ -48,7 +48,6 @@ const ToastViewer = () => {
     setContent,
     setImageUrlArr,
     setThumbnailUrl,
-    setNickname,
     setContentSummary,
     setCreated_At,
     setIsEdit,
@@ -98,7 +97,7 @@ const ToastViewer = () => {
       setContent(data.content);
       setImageUrlArr(data.image_url);
       setThumbnailUrl(data?.thumbnail_url);
-      setNickname(data.nickname);
+
       setCreated_At(data.created_at);
       setContentSummary(data?.content_summary);
       setEmail(data?.email);

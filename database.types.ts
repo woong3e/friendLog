@@ -23,7 +23,6 @@ export type Database = {
           event_date: string | null
           id: number
           image_url: string | null
-          nickname: string
           rating: number | null
           thumbnail_url: string | null
           title: string
@@ -36,7 +35,6 @@ export type Database = {
           event_date?: string | null
           id?: number
           image_url?: string | null
-          nickname: string
           rating?: number | null
           thumbnail_url?: string | null
           title: string
@@ -49,7 +47,6 @@ export type Database = {
           event_date?: string | null
           id?: number
           image_url?: string | null
-          nickname?: string
           rating?: number | null
           thumbnail_url?: string | null
           title?: string

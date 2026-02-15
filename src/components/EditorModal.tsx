@@ -143,7 +143,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   };
 
   const onReuploadChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -181,7 +181,6 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     image_url: JSON.stringify(imageUrlArr),
     thumbnail_url: thumbnailUrl,
     content_summary: contentSummary,
-    nickname: nickname,
     email: session?.user?.email,
     event_date: eventDate,
   };
@@ -354,7 +353,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
         </div>
       </section>
     </main>,
-    document.getElementById('modal-root')!
+    document.getElementById('modal-root')!,
   );
 };
 
