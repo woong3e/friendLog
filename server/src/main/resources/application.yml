@@ -32,6 +32,19 @@ friendlog:
     refresh-token-ttl: 14d
     # 로컬(http)에서는 Secure 쿠키를 쓸 수 없어서 false. 운영(https)은 true
     refresh-cookie-secure: ${REFRESH_COOKIE_SECURE:false}
+  # 이미지 저장소. 로컬은 compose의 S3Mock, 운영은 AWS S3 (환경 변수로 덮어쓰기)
+  storage:
+    bucket: ${S3_BUCKET:friendlog}
+    region: ${S3_REGION:ap-northeast-2}
+    # 로컬 전용: 가짜 S3 주소와 아무 값 키. 운영에서는 비워 두면 AWS 기본 설정(IAM 역할 등)을 쓴다
+    endpoint: ${S3_ENDPOINT:http://localhost:9090}
+    access-key: ${S3_ACCESS_KEY:local}
+    secret-key: ${S3_SECRET_KEY:local}
+    # 브라우저가 이미지를 읽는 주소의 앞부분 (운영: https://{버킷}.s3.{리전}.amazonaws.com 또는 CloudFront)
+    public-base-url: ${S3_PUBLIC_BASE_URL:http://localhost:9090/friendlog}
+    presign-ttl: 5m          # Presigned URL 유효 시간
+    cleanup-grace: 24h       # 업로드 후 이 시간이 지나도 어디에도 쓰이지 않으면 삭제
+    cleanup-cron: "0 0 4 * * *"  # 매일 새벽 4시
   signup:
     code-ttl: 10m           # 인증 코드 유효 시간
     resend-cooldown: 60s    # 재전송 간격

@@ -6,9 +6,11 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.wondang.friendlog.auth.jwt.JwtProvider;
+import xyz.wondang.friendlog.image.ImageStorage;
 import xyz.wondang.friendlog.member.Member;
 
 /**
@@ -32,6 +34,10 @@ public abstract class IntegrationTest {
 
     @MockitoBean
     protected JavaMailSender mailSender;
+
+    // 실제 S3 구현을 감싼 스파이: Presigned URL 서명은 진짜로 계산하고(네트워크 없음), 삭제는 테스트에서 가짜로 바꾼다
+    @MockitoSpyBean
+    protected ImageStorage imageStorage;
 
     // Authorization 헤더 값
     protected String bearer(Member member) {
