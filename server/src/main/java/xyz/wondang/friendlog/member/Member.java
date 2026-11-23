@@ -36,4 +36,13 @@ public class Member extends BaseTimeEntity {
         this.password = password;
         this.nickname = nickname;
     }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    // null이면 아바타 삭제
+    public void changeAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 }

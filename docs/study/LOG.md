@@ -7,6 +7,32 @@
 
 ---
 
+## 2026-11-23 · 3단계: 평가·프로필
+
+브랜치: `feat/rating-profile` → main
+
+**읽는 순서** (`server/src/main/java/xyz/wondang/friendlog/`)
+1. `rating/RatingController` → `rating/RatingService` → `rating/RatingRepository` (upsert 네이티브 쿼리)
+2. `member/MemberController` → `MemberService.updateMe` → `member/dto/MemberUpdateRequest`
+3. 테스트: `rating/RatingApiTest`, `rating/RatingConcurrencyTest`, `member/MemberApiTest`
+
+**개념**
+- 집계 쿼리: 점수별 `GROUP BY` 한 번으로 평균과 분포를 같이 계산
+- upsert와 동시성: "조회 후 없으면 INSERT"는 동시 요청에서 둘 다 INSERT → 유니크 위반. `INSERT ... ON DUPLICATE KEY UPDATE` 로 DB가 한 문장으로 처리
+- 트랜잭션 격리 수준과 MVCC: MySQL 기본 REPEATABLE READ는 트랜잭션 첫 조회 시점의 스냅샷을 계속 읽음 → 다른 트랜잭션이 커밋한 행이 안 보일 수 있음. 실제 동시성 테스트에서 재현 후 `READ_COMMITTED` 로 해결
+- PATCH의 부분 수정: "필드 없음"과 "null"을 구분해야 함
+
+**결정 (Claude가 추천안으로 정함)**
+| 결정 | 이유 |
+| --- | --- |
+| 평균은 저장하지 않음 (1단계에서 결정) | 비정규화하면 평가마다 동기화와 동시성 처리가 필요. 규모상 계산이 충분히 싸다 |
+| 평가 upsert는 네이티브 쿼리 | JPQL에는 upsert가 없음. MySQL 전용이 되지만 DB를 바꿀 계획이 없음 |
+| 자기 글에도 평가 가능 | 기존 서비스 동작 유지. 시상식에서 "본인 모임 투표 불가"는 8단계 규칙 |
+| `ratings.nickname` 없음 | 화면은 member 조인으로 현재 닉네임 표시 |
+| 닉네임은 지울 수 없음 (`null` → 400), 아바타는 `null` 로 삭제 | |
+
+---
+
 ## 2026-11-23 · 2단계: 인증
 
 브랜치: `feat/auth` → main
@@ -42,6 +68,8 @@
 | Redis 없이 MySQL | 규모상 충분, 운영할 컴포넌트를 줄임 |
 | 메일 발송을 트랜잭션 안에서 | 발송 실패 시 가입 정보도 롤백. 대신 메일 서버가 느리면 DB 연결을 오래 잡음 (규모상 감수) |
 | jjwt 라이브러리 + 직접 만든 필터 | 필터 체인 동작을 코드로 볼 수 있게 (Spring의 oauth2-resource-server도 대안) |
+
+---
 
 ## 2026-11-23 · 1단계: 로컬 환경 + 게시글 CRUD
 

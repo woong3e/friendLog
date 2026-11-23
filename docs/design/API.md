@@ -199,7 +199,9 @@
 | score | 필수, 0.5~5.0, 0.5 단위 |
 | comment | 500자 이하 |
 
-`200 OK` — 저장된 평가 (목록 항목과 같은 모양)
+`200 OK` — 저장된 평가 (목록 항목과 같은 모양 + `updatedAt`)
+
+구현: MySQL `INSERT ... ON DUPLICATE KEY UPDATE` — 같은 사람이 동시에 여러 번 보내도 평가는 하나 (테스트로 확인).
 
 `400 INVALID_INPUT` · `404 POST_NOT_FOUND`
 
@@ -227,7 +229,7 @@
 
 `200 OK` — 바뀐 내 정보
 
-`400 INVALID_INPUT` (닉네임 1~30자)
+`400 INVALID_INPUT` (닉네임 1~30자, 닉네임 `null` 불가)
 
 ---
 
