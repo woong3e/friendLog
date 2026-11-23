@@ -1,6 +1,8 @@
 package xyz.wondang.friendlog.auth.security;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import xyz.wondang.friendlog.auth.jwt.JwtProvider;
 
 /**
@@ -29,9 +34,14 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final SecurityErrorHandlers errorHandlers;
 
+    // 프론트 주소 목록 (application.yml friendlog.cors.allowed-origins)
+    @Value("${friendlog.cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -46,6 +56,25 @@ public class SecurityConfig {
                 // 아이디·비밀번호 필터 자리 앞에 JWT 필터를 끼운다
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    /**
+     * CORS: 브라우저는 다른 출처(프론트 localhost:5173 → API localhost:8080)로 보내는 요청을 기본으로 막는다.
+     * 서버가 "이 출처는 허용"이라고 응답 헤더로 알려 줘야 브라우저가 응답을 프론트 코드에 넘겨준다.
+     * allowCredentials: 리프레시 토큰 쿠키를 주고받기 위해 필요. 이때는 출처를 * 로 열 수 없어서 목록으로 지정한다.
+     */
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Location"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L); // 사전 요청(OPTIONS) 결과를 브라우저가 1시간 기억
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     /**
