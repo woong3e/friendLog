@@ -103,6 +103,28 @@ erDiagram
 | url | VARCHAR(500) | NOT NULL | 본문에 들어간 이미지 |
 | created_at | DATETIME(6) | NOT NULL | |
 
+### signup_verification (2단계, V2)
+
+인증 코드 확인 전의 가입 정보. 코드가 맞으면 member를 만들고 이 행은 지운다.
+
+| 컬럼 | 타입 | 설명 |
+| --- | --- | --- |
+| email | VARCHAR(255) UNIQUE | |
+| password | VARCHAR(255) | bcrypt 해시 |
+| nickname | VARCHAR(30) | |
+| code | CHAR(6) | 인증 코드 |
+| expires_at | DATETIME(6) | 발급 후 10분 |
+| failed_attempts | INT | 5번 틀리면 재발급 필요 |
+| last_sent_at | DATETIME(6) | 재전송 60초 제한 |
+
+### refresh_token (2단계, V2)
+
+| 컬럼 | 타입 | 설명 |
+| --- | --- | --- |
+| member_id | BIGINT FK | |
+| token_hash | CHAR(64) UNIQUE | 원문이 아닌 SHA-256 해시 |
+| expires_at | DATETIME(6) | 발급 후 14일 |
+
 ## 결정과 이유
 
 | 결정 | 이유 |
@@ -126,10 +148,10 @@ erDiagram
 
 | 항목 | 단계 |
 | --- | --- |
-| 이메일 인증 코드 저장 (테이블 vs Redis), 리프레시 토큰 저장 | 2단계 |
-| 평균 평점 저장 여부와 동시성 | 3단계 |
+| ~~이메일 인증 코드·리프레시 토큰 저장~~ → 둘 다 MySQL 테이블 (Redis 없이 운영 단순화) | 2단계 완료 |
+| ~~평균 평점 저장 여부~~ → 저장하지 않고 매번 계산 | 1단계에서 결정 |
 | 업로드했지만 글에 쓰이지 않은 이미지 추적 방식, 아바타·썸네일도 이미지 테이블로 관리할지 | 4단계 |
-| 글 삭제 시 평가·이미지 함께 삭제 (DB `ON DELETE CASCADE` vs JPA cascade vs 서비스에서 직접) | 1단계 |
+| ~~글 삭제 시 평가·이미지~~ → 평가는 서비스에서 벌크 DELETE, 이미지는 JPA cascade | 1단계 완료 |
 | 컬럼 길이(title 100, nickname 30 등)가 기존 데이터에 맞는지 | 7단계 이전 전 확인 |
 
 ## Supabase → MySQL 대응 (7단계 참고)

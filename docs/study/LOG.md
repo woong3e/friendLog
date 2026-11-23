@@ -7,6 +7,42 @@
 
 ---
 
+## 2026-11-23 · 2단계: 인증
+
+브랜치: `feat/auth` → main
+
+**읽는 순서** (`server/src/main/java/xyz/wondang/friendlog/`)
+1. `resources/db/migration/V2__create_auth_tables.sql`
+2. `auth/security/SecurityConfig` → `JwtAuthenticationFilter` → `SecurityErrorHandlers` (요청이 컨트롤러에 오기 전)
+3. `auth/jwt/JwtProvider` (액세스 토큰)
+4. `auth/AuthController` → `auth/signup/SignupService` → `SignupVerification` (가입)
+5. `auth/AuthService` → `auth/refresh/RefreshTokenService` (로그인·재발급·로그아웃)
+6. 테스트: `auth/AuthApiTest`, `auth/VerificationAttemptsTest`
+
+**개념**
+- Spring Security 필터 체인: 요청 → 필터들 → 인가 검사 → 컨트롤러. JWT 필터는 로그인 정보만 채우고, 막는 건 인가 단계
+- 세션 대신 JWT (STATELESS): 서버가 상태를 갖지 않고 서명으로 신원 확인. 대신 취소가 안 되니 짧게(30분)
+- 리프레시 토큰은 서버에 기록(해시) → 로그아웃·회전으로 무효화 가능
+- 비밀번호 해시 bcrypt (salt + 느린 계산)
+- 쿠키 속성: HttpOnly(XSS), Secure(https), SameSite=Lax(CSRF), Path
+- 트랜잭션과 예외: 기본은 RuntimeException이면 롤백. 틀린 횟수를 저장하고 예외를 던지려면 `noRollbackFor`
+- 테스트의 함정 두 가지
+  - 테스트 전체가 트랜잭션 하나면 롤백 버그를 못 잡음 → `VerificationAttemptsTest` 는 트랜잭션 없이
+  - 벌크 update는 영속성 컨텍스트를 건너뜀 → `em.clear()` 필요 (`AuthApiTest.만료된_코드는_400`)
+
+**결정 (Claude가 추천안으로 정함)**
+| 결정 | 이유 |
+| --- | --- |
+| 가입 대기 정보를 별도 테이블에, 인증 후 member 생성 | member에 "미인증 회원"이 섞이지 않음. 버려진 신청은 member를 더럽히지 않음 |
+| 이미 가입된 이메일은 409로 알림 | 친구 모임 서비스라 편의 우선 (Supabase처럼 숨기면 사용자가 오지 않는 메일을 기다림) |
+| 로그인 실패는 구분 없이 401 | 이메일 존재 여부 노출 방지 |
+| 코드 10분, 재전송 60초, 5회 | 흔한 기본값 |
+| 액세스 토큰은 본문, 리프레시는 HttpOnly 쿠키 | 액세스는 메모리에(새로고침 시 쿠키로 재발급), 리프레시는 JS가 못 읽게 |
+| 리프레시 토큰은 JWT가 아닌 무작위 값 + DB 해시 + 회전 | 어차피 DB에서 확인하는 토큰이라 내용 불필요. 탈취돼도 한 번 쓰이면 끝 |
+| Redis 없이 MySQL | 규모상 충분, 운영할 컴포넌트를 줄임 |
+| 메일 발송을 트랜잭션 안에서 | 발송 실패 시 가입 정보도 롤백. 대신 메일 서버가 느리면 DB 연결을 오래 잡음 (규모상 감수) |
+| jjwt 라이브러리 + 직접 만든 필터 | 필터 체인 동작을 코드로 볼 수 있게 (Spring의 oauth2-resource-server도 대안) |
+
 ## 2026-11-23 · 1단계: 로컬 환경 + 게시글 CRUD
 
 브랜치: `feat/post-crud` → main

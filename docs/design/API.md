@@ -231,25 +231,29 @@
 
 ---
 
-## 인증 (2단계에서 확정)
+## 인증 (2단계 구현 완료)
 
 흐름은 지금 서비스와 같게 잡았다: 가입 → 메일로 6자리 코드 → 코드 확인하면 가입 완료 + 로그인.
 
 | API | 요청 | 성공 | 실패 |
 | --- | --- | --- | --- |
-| `POST /auth/signup` | `{ email, password, nickname }` | `202 Accepted` (코드 발송) | `400`, `409 EMAIL_DUPLICATED`(알릴지 숨길지 2단계 결정) |
-| `POST /auth/signup/verify` | `{ email, code }` | `200` 토큰 발급 | `400 INVALID_VERIFICATION_CODE`, `400 VERIFICATION_CODE_EXPIRED` |
+| `POST /auth/signup` | `{ email, password, nickname }` | `202 Accepted` (코드 발송) | `400`, `409 EMAIL_DUPLICATED`, `429 TOO_MANY_REQUESTS`(60초 안에 다시 신청) |
+| `POST /auth/signup/verify` | `{ email, code }` | `200` 토큰 발급 | `400 INVALID_VERIFICATION_CODE`, `400 VERIFICATION_CODE_EXPIRED`, `400 VERIFICATION_NOT_FOUND`, `429 VERIFICATION_ATTEMPTS_EXCEEDED`(5번 틀림) |
 | `POST /auth/signup/resend` | `{ email }` | `202` | `429 TOO_MANY_REQUESTS` (재전송 제한) |
 | `POST /auth/login` | `{ email, password }` | `200` 토큰 발급 | `401 INVALID_CREDENTIALS` |
-| `POST /auth/refresh` | 리프레시 토큰 | `200` 새 액세스 토큰 | `401` |
+| `POST /auth/refresh` | 리프레시 토큰 쿠키 | `200` 새 토큰 한 쌍 (리프레시 회전) | `401 INVALID_REFRESH_TOKEN` |
 | `POST /auth/logout` | — | `204` | |
 
-토큰 발급 응답 (안)
+토큰 발급 응답 (본문 + `Set-Cookie: refresh_token=...; HttpOnly; SameSite=Lax; Path=/auth`)
 ```json
 { "accessToken": "eyJ...", "member": { "id": 3, "email": "...", "nickname": "노기", "avatarUrl": null } }
 ```
 
-2단계에서 정할 것: 리프레시 토큰을 어디에 둘지 (HttpOnly 쿠키 vs 응답 본문), 이미 가입된 이메일을 알려 줄지, 로그인 실패 시 이메일 존재 여부를 구분할지.
+2단계에서 정한 것:
+- 액세스 토큰(JWT, 30분)은 본문으로 → 프론트가 메모리에 들고 `Authorization` 헤더로 보냄
+- 리프레시 토큰(무작위 문자열, 14일)은 HttpOnly 쿠키 → 자바스크립트가 못 읽음. DB에는 해시만, 쓸 때마다 회전
+- 이미 가입된 이메일은 409로 알림 (친구 모임 서비스라 편의 우선)
+- 로그인 실패는 이메일 없음·비밀번호 틀림을 구분하지 않음 (`INVALID_CREDENTIALS`)
 
 ---
 
@@ -285,10 +289,14 @@
 | `POST_FORBIDDEN` | 403 | 남의 글 수정·삭제 |
 | `POST_NOT_FOUND` | 404 | |
 | `MEMBER_NOT_FOUND` | 404 | |
-| `EMAIL_DUPLICATED` | 409 | 2단계 결정에 따라 |
+| `EMAIL_DUPLICATED` | 409 | 이미 가입된 이메일 |
 | `INVALID_VERIFICATION_CODE` | 400 | |
 | `VERIFICATION_CODE_EXPIRED` | 400 | |
-| `TOO_MANY_REQUESTS` | 429 | 인증 코드 재전송 제한 |
+| `VERIFICATION_NOT_FOUND` | 400 | 가입 신청 없이 인증·재전송 |
+| `VERIFICATION_ATTEMPTS_EXCEEDED` | 429 | 코드 5번 틀림 → 재전송 필요 |
+| `INVALID_REFRESH_TOKEN` | 401 | 리프레시 토큰 없음·만료·이미 사용 |
+| `MAIL_SEND_FAILED` | 503 | 메일 서버 오류 |
+| `TOO_MANY_REQUESTS` | 429 | 인증 코드 재전송 60초 제한 |
 | `INTERNAL_ERROR` | 500 | 예상하지 못한 오류 (메시지에 내부 정보 노출 금지) |
 
 ---
