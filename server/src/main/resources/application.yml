@@ -13,3 +13,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    # DB 연결을 트랜잭션(서비스) 안에서만 쓰고 바로 반납한다.
+    # 그래서 LAZY 연관관계는 서비스 안에서 DTO로 바꿀 때 읽어야 한다.
+    open-in-view: false

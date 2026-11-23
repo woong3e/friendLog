@@ -66,4 +66,38 @@ public class Post extends BaseTimeEntity {
     public void addImage(String url) {
         images.add(new PostImage(this, url));
     }
+
+    /**
+     * 글 수정. setter 대신 "수정"이라는 의미를 가진 메서드 하나로 바꾼다.
+     * 트랜잭션 안에서 호출하면 save()를 부르지 않아도 커밋 시점에 UPDATE가 나간다 (변경 감지).
+     */
+    public void update(String title, String content, String summary,
+                       String thumbnailUrl, LocalDateTime eventAt) {
+        this.title = title;
+        this.content = content;
+        this.summary = summary;
+        this.thumbnailUrl = thumbnailUrl;
+        this.eventAt = eventAt;
+    }
+
+    /**
+     * 본문 이미지 목록을 새 목록으로 맞춘다.
+     * 빠진 이미지는 orphanRemoval로 DELETE, 새 이미지만 INSERT. 그대로인 이미지는 건드리지 않는다.
+     */
+    public void replaceImages(List<String> newUrls) {
+        images.removeIf(image -> !newUrls.contains(image.getUrl()));
+        List<String> currentUrls = images.stream().map(PostImage::getUrl).toList();
+        newUrls.stream()
+                .distinct()
+                .filter(url -> !currentUrls.contains(url))
+                .forEach(this::addImage);
+    }
+
+    public boolean isWrittenBy(Long memberId) {
+        return member.getId().equals(memberId);
+    }
+
+    public List<String> getImageUrls() {
+        return images.stream().map(PostImage::getUrl).toList();
+    }
 }
