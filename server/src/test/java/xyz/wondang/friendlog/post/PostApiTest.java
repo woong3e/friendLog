@@ -51,7 +51,7 @@ class PostApiTest extends IntegrationTest {
 
     private Long createPost() throws Exception {
         String response = mockMvc.perform(post("/posts")
-                        .header("X-Member-Id", writer.getId())
+                        .header("Authorization", bearer(writer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(BODY))
                 .andExpect(status().isCreated())
@@ -70,7 +70,7 @@ class PostApiTest extends IntegrationTest {
         Long id = createPost();
         flushAndClear();
 
-        mockMvc.perform(get("/posts/{id}", id))
+        mockMvc.perform(get("/posts/{id}", id).header("Authorization", bearer(writer)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("독서 퀴즈"))
                 .andExpect(jsonPath("$.eventAt").value("2025-08-30T18:00:00"))
@@ -82,7 +82,7 @@ class PostApiTest extends IntegrationTest {
     @Test
     void 등록하면_Location_헤더에_새_글_주소를_준다() throws Exception {
         mockMvc.perform(post("/posts")
-                        .header("X-Member-Id", writer.getId())
+                        .header("Authorization", bearer(writer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(BODY))
                 .andExpect(status().isCreated())
@@ -95,7 +95,7 @@ class PostApiTest extends IntegrationTest {
         flushAndClear();
 
         mockMvc.perform(put("/posts/{id}", id)
-                        .header("X-Member-Id", writer.getId())
+                        .header("Authorization", bearer(writer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -108,7 +108,7 @@ class PostApiTest extends IntegrationTest {
                 .andExpect(status().isNoContent());
         flushAndClear();
 
-        mockMvc.perform(get("/posts/{id}", id))
+        mockMvc.perform(get("/posts/{id}", id).header("Authorization", bearer(writer)))
                 .andExpect(jsonPath("$.title").value("수정된 제목"))
                 .andExpect(jsonPath("$.summary").doesNotExist())
                 .andExpect(jsonPath("$.imageUrls", containsInAnyOrder("https://img/b.webp", "https://img/c.webp")));
@@ -119,7 +119,7 @@ class PostApiTest extends IntegrationTest {
         Long id = createPost();
 
         mockMvc.perform(put("/posts/{id}", id)
-                        .header("X-Member-Id", other.getId())
+                        .header("Authorization", bearer(other))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(BODY))
                 .andExpect(status().isForbidden())
@@ -131,11 +131,11 @@ class PostApiTest extends IntegrationTest {
         Long id = createPost();
         flushAndClear();
 
-        mockMvc.perform(delete("/posts/{id}", id).header("X-Member-Id", writer.getId()))
+        mockMvc.perform(delete("/posts/{id}", id).header("Authorization", bearer(writer)))
                 .andExpect(status().isNoContent());
         flushAndClear();
 
-        mockMvc.perform(get("/posts/{id}", id))
+        mockMvc.perform(get("/posts/{id}", id).header("Authorization", bearer(writer)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("POST_NOT_FOUND"));
         Long imageCount = em.createQuery("select count(i) from PostImage i", Long.class).getSingleResult();
@@ -146,13 +146,13 @@ class PostApiTest extends IntegrationTest {
     void 작성자가_아니면_삭제할_수_없다() throws Exception {
         Long id = createPost();
 
-        mockMvc.perform(delete("/posts/{id}", id).header("X-Member-Id", other.getId()))
+        mockMvc.perform(delete("/posts/{id}", id).header("Authorization", bearer(other)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void 없는_글은_404() throws Exception {
-        mockMvc.perform(get("/posts/{id}", 999_999))
+        mockMvc.perform(get("/posts/{id}", 999_999).header("Authorization", bearer(writer)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("POST_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("게시글을 찾을 수 없습니다."));
@@ -161,7 +161,7 @@ class PostApiTest extends IntegrationTest {
     @Test
     void 필수값이_없으면_어떤_필드가_틀렸는지_알려준다() throws Exception {
         mockMvc.perform(post("/posts")
-                        .header("X-Member-Id", writer.getId())
+                        .header("Authorization", bearer(writer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 { "title": "", "content": "본문" }
@@ -175,7 +175,7 @@ class PostApiTest extends IntegrationTest {
     @Test
     void 날짜_형식이_틀리면_400() throws Exception {
         mockMvc.perform(post("/posts")
-                        .header("X-Member-Id", writer.getId())
+                        .header("Authorization", bearer(writer))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 { "title": "a", "content": "b", "eventAt": "2025/08/30" }

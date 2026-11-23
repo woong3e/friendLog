@@ -53,7 +53,7 @@ class PostListApiTest extends IntegrationTest {
 
     @Test
     void 기본은_모임_최신순() throws Exception {
-        mockMvc.perform(get("/posts"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].title", contains("3월 모임", "2월 모임", "1월 모임")))
                 .andExpect(jsonPath("$.hasNext").value(false));
@@ -61,13 +61,13 @@ class PostListApiTest extends IntegrationTest {
 
     @Test
     void 오래된순() throws Exception {
-        mockMvc.perform(get("/posts").param("sort", "oldest"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("sort", "oldest"))
                 .andExpect(jsonPath("$.content[*].title", contains("1월 모임", "2월 모임", "3월 모임")));
     }
 
     @Test
     void 평점_높은순_평가없는_글은_맨_뒤() throws Exception {
-        mockMvc.perform(get("/posts").param("sort", "rating_high"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("sort", "rating_high"))
                 .andExpect(jsonPath("$.content[*].title", contains("2월 모임", "1월 모임", "3월 모임")))
                 .andExpect(jsonPath("$.content[0].averageScore").value(5.0))
                 .andExpect(jsonPath("$.content[1].averageScore").value(3.0))
@@ -76,33 +76,33 @@ class PostListApiTest extends IntegrationTest {
 
     @Test
     void 평점_낮은순_평가없는_글은_맨_뒤() throws Exception {
-        mockMvc.perform(get("/posts").param("sort", "rating_low"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("sort", "rating_low"))
                 .andExpect(jsonPath("$.content[*].title", contains("1월 모임", "2월 모임", "3월 모임")));
     }
 
     @Test
     void 페이지를_나누고_다음_페이지_여부를_알려준다() throws Exception {
-        mockMvc.perform(get("/posts").param("size", "2"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("size", "2"))
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.hasNext").value(true));
 
-        mockMvc.perform(get("/posts").param("size", "2").param("page", "1"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("size", "2").param("page", "1"))
                 .andExpect(jsonPath("$.content[*].title", contains("1월 모임")))
                 .andExpect(jsonPath("$.hasNext").value(false));
     }
 
     @Test
     void 작성자와_내가_평가했는지를_함께_준다() throws Exception {
-        mockMvc.perform(get("/posts").header("X-Member-Id", b.getId()))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(b)))
                 .andExpect(jsonPath("$.content[*].author.nickname", contains("에이", "비", "에이")))
                 .andExpect(jsonPath("$.content[*].ratedByMe", contains(false, false, true)));
     }
 
     @Test
     void 모르는_정렬값이나_잘못된_size는_400() throws Exception {
-        mockMvc.perform(get("/posts").param("sort", "popular"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("sort", "popular"))
                 .andExpect(status().isBadRequest());
-        mockMvc.perform(get("/posts").param("size", "0"))
+        mockMvc.perform(get("/posts").header("Authorization", bearer(a)).param("size", "0"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -119,7 +119,7 @@ class PostListApiTest extends IntegrationTest {
         stats.setStatisticsEnabled(true);
         stats.clear();
 
-        mockMvc.perform(get("/posts").param("size", "8").header("X-Member-Id", a.getId()))
+        mockMvc.perform(get("/posts").param("size", "8").header("Authorization", bearer(a)))
                 .andExpect(jsonPath("$.content", hasSize(8)));
 
         // 1) id+평균  2) 글+작성자  3) 내가 평가한 글. 작성자가 8명이어도 늘어나지 않는다
