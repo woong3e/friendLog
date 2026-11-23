@@ -35,9 +35,9 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 
 ## 0단계. 설계 (1주)
 
-- [ ] 현재 기능 목록 → API 목록
-- [ ] MySQL ERD (작성자를 email이 아니라 member ID로 연결 등)
-- [ ] API 명세
+- [x] 현재 기능 목록 → API 목록 ([api-inventory.md](api-inventory.md))
+- [x] MySQL ERD ([docs/design/ERD.md](../design/ERD.md))
+- [x] API 명세 ([docs/design/API.md](../design/API.md))
 - 배울 것: REST 설계, 정규화, 연관관계
 
 ## 1단계. 로컬 환경 + 게시글 CRUD (2주)
