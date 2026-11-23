@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-11-23 · 0단계: ERD와 API 명세
+
+브랜치: `design/erd-api` (커밋 전)
+
+**배운 개념**
+- 정규화: 같은 사실은 한 곳에만. `ratings.nickname` 복사본, email로 작성자 연결, JSON 문자열에 묶인 이미지 목록이 반례
+- 연관관계: N 쪽이 1 쪽의 id를 외래 키로 가진다 (post.member_id → member.id). 1단계 JPA의 `@ManyToOne` 으로 이어짐
+- REST: URL은 자원(명사), 동작은 메서드, 결과는 상태 코드. PUT은 통째로 교체, PATCH는 일부 수정
+- 멱등성: 같은 요청을 여러 번 보내도 결과가 같음 (GET·PUT·DELETE는 멱등, POST는 아님)
+
+**결정한 것**
+- PK는 BIGINT 자동 증가 (uuid는 7단계에서 대응표로 변환)
+- 본문 이미지는 `post_image` 테이블로 분리, 별점은 DECIMAL(2,1), 모임 시간은 `event_at` DATETIME 컬럼
+- 페이징은 오프셋 + Slice, 평가는 `PUT /posts/{id}/ratings/me`, 성공 응답은 감싸지 않고 에러 형식만 통일
+- 목록 응답에 `author`, `ratedByMe` 를 포함해서 카드마다 보내던 요청을 없앰
+
+**만든 것**
+- [docs/design/ERD.md](../design/ERD.md), [docs/design/API.md](../design/API.md)
+
+**다음 할 일**
+- 1단계: `friendlog-server` 레포 생성, Docker Compose MySQL, 엔티티, 게시글 CRUD
+
+---
+
 ## 2026-11-23 · 준비 단계: Supabase 호출을 `src/api/` 로 모으기
 
 브랜치: `refactor/api-layer` (커밋 전)
