@@ -1,6 +1,8 @@
 package xyz.wondang.friendlog.post;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import xyz.wondang.friendlog.post.dto.PostCreateResponse;
 import xyz.wondang.friendlog.post.dto.PostDetailResponse;
 import xyz.wondang.friendlog.post.dto.PostRequest;
+import xyz.wondang.friendlog.post.dto.PostSliceResponse;
 
 /**
  * 컨트롤러는 HTTP ↔ 자바 변환만 한다 (요청 검증, 상태 코드). 로직은 서비스에.
@@ -36,6 +40,15 @@ public class PostController {
                                                      @Valid @RequestBody PostRequest request) {
         Long id = postService.create(memberId, request);
         return ResponseEntity.created(URI.create("/posts/" + id)).body(new PostCreateResponse(id));
+    }
+
+    // GET /posts?page=0&size=8&sort=latest
+    @GetMapping
+    public PostSliceResponse getList(@RequestHeader(value = MEMBER_ID_HEADER, required = false) Long memberId,
+                                     @RequestParam(defaultValue = "0") @Min(0) int page,
+                                     @RequestParam(defaultValue = "8") @Min(1) @Max(50) int size,
+                                     @RequestParam(defaultValue = "latest") String sort) {
+        return postService.getList(memberId, PostSort.from(sort), page, size);
     }
 
     @GetMapping("/{postId}")
