@@ -2,6 +2,42 @@
 
 대화마다 하나씩, 최신이 위로.
 
+> 1~5단계는 Claude가 구현·커밋하고 사용자가 나중에 코드를 읽는 방식으로 진행 (2026-11-23 결정).
+> 아래 단계별 기록의 "읽는 순서"를 따라가면 된다.
+
+---
+
+## 2026-11-23 · 1단계: 로컬 환경 + 게시글 CRUD
+
+브랜치: `feat/post-crud` → main
+
+**읽는 순서** (`server/src/main/java/xyz/wondang/friendlog/`)
+1. `resources/db/migration/V1__create_tables.sql` → `member/Member`, `post/Post`, `post/PostImage`, `rating/Rating`, `common/BaseTimeEntity`
+2. `post/PostController` → `post/PostService` (등록·조회·수정·삭제)
+3. `post/PostSort`, `post/PostListQuery`, `PostService.getList` (목록)
+4. `common/exception/*` (에러 응답)
+5. 테스트: `src/test/.../post/PostApiTest`, `PostListApiTest`
+
+**개념**
+- Spring Boot starter·자동 설정, Docker Compose, Flyway(버전별 SQL, checksum), `ddl-auto: validate`
+- JPA 매핑: `@Entity`, `@ManyToOne(LAZY)`, `@OneToMany(mappedBy, cascade, orphanRemoval)`, 연관관계의 주인
+- 영속성 컨텍스트와 변경 감지: `PostService.update` 는 `save()` 없이 필드만 바꾸고 커밋 때 UPDATE
+- 트랜잭션: 클래스에 `readOnly = true`, 쓰기 메서드에만 `@Transactional`. `open-in-view: false` 라서 LAZY는 서비스 안에서 DTO로 변환
+- N+1: 카드마다 작성자·평점을 따로 조회하면 쿼리가 카드 수만큼 늘어남 → 페이지당 3번으로 고정 (`PostListQuery`), 테스트로 쿼리 수 검증
+- Slice: COUNT 없이 size+1개를 가져와 다음 페이지 여부만 판단
+- `@RestControllerAdvice` 로 예외를 한 곳에서 `{ code, message, errors }` 로 변환
+
+**결정 (Claude가 추천안으로 정함)**
+| 결정 | 이유 |
+| --- | --- |
+| Flyway + validate | 운영 DB 변경 이력 관리, 7단계 이전·배포까지 같은 SQL |
+| MySQL 포트 3307 | 이 Mac에 설치된 MySQL이 3306 사용 중 |
+| 평균 평점은 저장하지 않고 매번 GROUP BY | 글 수백 개 규모라 계산 비용이 작고, 저장하면 평가 등록마다 동기화·동시성 문제가 생김 (3단계 질문을 여기서 결정) |
+| 글 삭제 시 평가는 벌크 DELETE, 이미지는 JPA cascade | 평가는 `Post` 와 단방향이라 서비스에서 직접 지움. DB `ON DELETE CASCADE` 는 JPA가 모르는 삭제라 쓰지 않음 |
+| 정렬 동점 시 id를 마지막 기준 | 같은 날짜·같은 평점이면 페이지 사이에 중복·누락이 생길 수 있어서 |
+| 테스트는 Testcontainers MySQL | H2는 MySQL과 문법·동작이 달라서. 로컬 DB와도 분리 |
+| 1단계 작성자는 `X-Member-Id` 헤더 | 인증 전 임시. 2단계에서 로그인 사용자로 교체 |
+
 ---
 
 ## 2026-11-23 · 0단계: ERD와 API 명세

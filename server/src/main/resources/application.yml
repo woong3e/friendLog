@@ -8,6 +8,11 @@ spring:
     username: ${DB_USERNAME:friendlog}
     password: ${DB_PASSWORD:friendlog}
 
+  # 테이블은 Flyway가 db/migration의 SQL로 만든다.
+  # Hibernate는 엔티티와 테이블이 맞는지 검사만 하고(validate), 다르면 앱이 뜨지 않는다.
   jpa:
     hibernate:
-      ddl-auto: none # 테이블을 누가 만들지는 1-2(엔티티)에서 결정
+      ddl-auto: validate
+    # DB 연결을 트랜잭션(서비스) 안에서만 쓰고 바로 반납한다.
+    # 그래서 LAZY 연관관계는 서비스 안에서 DTO로 바꿀 때 읽어야 한다.
+    open-in-view: false
