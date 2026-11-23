@@ -25,5 +25,14 @@ services:
       timeout: 3s
       retries: 20
 
+  # 로컬 개발용 가짜 메일 서버. 앱이 보낸 인증 메일을 실제로 발송하지 않고 붙잡아 둔다.
+  # 받은 메일 보기: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.27
+    container_name: friendlog-mailpit
+    ports:
+      - "1025:1025" # SMTP (앱 → 메일 서버)
+      - "8025:8025" # 웹 화면
+
 volumes:
   mysql-data:
