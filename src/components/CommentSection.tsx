@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import supabase from '../utils/supabase';
+import { getRatingsWithAuthor, RatingWithAuthor } from '../api/ratings';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -10,51 +10,15 @@ dayjs.locale('ko');
 const CommentSection = () => {
   const { id } = useParams();
   const post_id = parseInt(id);
-  const [commentData, setCommentData] = useState<any[]>([]);
+  const [commentData, setCommentData] = useState<RatingWithAuthor[]>([]);
 
   useEffect(() => {
     const fetchRating = async () => {
-      // 1. Fetch ratings
-      const { data: ratingsData, error: ratingsError } = await supabase
-        .from('ratings')
-        .select('*')
-        .eq('post_id', post_id)
-        .order('created_at', { ascending: false });
-
-      if (ratingsError) {
-        console.error('Error fetching ratings:', ratingsError);
-        return;
+      try {
+        setCommentData(await getRatingsWithAuthor(post_id));
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
       }
-
-      if (!ratingsData || ratingsData.length === 0) {
-        setCommentData([]);
-        return;
-      }
-
-      // 2. Fetch profiles for the users in ratings
-      const userIds = ratingsData.map((r) => r.user_id);
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, nickname, avatar_image_url')
-        .in('id', userIds);
-
-      if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
-        // Fallback to showing ratings without profile info if profile fetch fails
-        setCommentData(ratingsData);
-        return;
-      }
-
-      // 3. Merge data
-      const mergedData = ratingsData.map((rating) => {
-        const profile = profilesData?.find((p) => p.id === rating.user_id);
-        return {
-          ...rating,
-          profiles: profile || null,
-        };
-      });
-
-      setCommentData(mergedData);
     };
     fetchRating();
   }, [post_id]);

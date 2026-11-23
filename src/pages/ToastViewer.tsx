@@ -1,19 +1,8 @@
-export interface Post {
-  title: string;
-  content: string;
-  rating: number | null;
-  image_url: string | null;
-  thumbnail_url: string | null;
-  content_summary: string | null;
-  created_at: string;
-  nickname: string;
-  email: string;
-}
-
 import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer';
 import '../styles/custom-toast-editor-dark.css';
 import { Helmet } from 'react-helmet-async';
-import supabase from '../utils/supabase';
+import { getPost } from '../api/posts';
+import { getProfileByEmail } from '../api/profiles';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from '../stores/useThemeStore';
@@ -62,7 +51,7 @@ const ToastViewer = () => {
   }, []);
 
   useEffect(() => {
-    getPosts();
+    loadPost();
   }, [id]);
 
   useEffect(() => {
@@ -82,25 +71,19 @@ const ToastViewer = () => {
     }
   }, [isDark, content]);
 
-  const getPosts = async () => {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('id', Number(id))
-      .single();
-    if (error) {
-      console.error(error);
-      return;
-    }
-    if (data) {
-      setTitle(data?.title);
+  const loadPost = async () => {
+    try {
+      const data = await getPost(Number(id));
+      setTitle(data.title);
       setContent(data.content);
       setImageUrlArr(data.image_url);
-      setThumbnailUrl(data?.thumbnail_url);
+      setThumbnailUrl(data.thumbnail_url);
 
       setCreated_At(data.created_at);
-      setContentSummary(data?.content_summary);
-      setEmail(data?.email);
+      setContentSummary(data.content_summary);
+      setEmail(data.email);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -116,14 +99,13 @@ const ToastViewer = () => {
       const email = usePostStore.getState().email;
       if (!email) return;
 
-      const { data } = await supabase
-        .from('profiles')
-        .select('nickname')
-        .eq('email', email)
-        .single();
-
-      if (data?.nickname) {
-        setAuthorNickname(data.nickname);
+      try {
+        const profile = await getProfileByEmail(email);
+        if (profile.nickname) {
+          setAuthorNickname(profile.nickname);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -145,7 +127,7 @@ const ToastViewer = () => {
           property="og:image"
           content={
             thumbnailUrl ||
-            'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/1756556110914.jpg'
+            `${window.location.origin}/images/assets/og-default.jpg`
           }
         />
         <meta property="og:url" content={window.location.href} />

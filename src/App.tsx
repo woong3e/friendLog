@@ -1,15 +1,15 @@
 import Router from './Router';
 import ReactQueryProvider from './config/ReactQueryProvider';
-import supabase from './utils/supabase';
 import { useAuthStore } from './stores/useAuthStore';
+import { getSession, onAuthChange } from './api/auth';
 
 function App() {
-  supabase.auth.getSession().then(({ data }) => {
-    useAuthStore.getState().setSession(data.session);
+  getSession().then((session) => {
+    useAuthStore.getState().setSession(session);
     useAuthStore.getState().setInitialized(true);
   });
 
-  supabase.auth.onAuthStateChange((_event, session) => {
+  onAuthChange((session) => {
     useAuthStore.getState().setSession(session);
   });
 

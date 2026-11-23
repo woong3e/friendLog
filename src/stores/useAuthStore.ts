@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { Session } from '@supabase/supabase-js';
+import type { AuthSession } from '../api/auth';
 
 interface AuthState {
-  session: Session | null;
+  session: AuthSession | null;
   isInitialized: boolean;
-  setSession: (session: Session | null) => void;
+  setSession: (session: AuthSession | null) => void;
   setInitialized: (isInitialized: boolean) => void;
   clearSession: () => void;
 }

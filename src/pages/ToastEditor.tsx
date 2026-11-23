@@ -10,7 +10,8 @@ import {
   useState,
 } from 'react';
 import '../styles/custom-toast-editor-dark.css';
-import supabase from '../utils/supabase';
+import { getPost, Post } from '../api/posts';
+import { uploadImage } from '../api/storage';
 import { useThemeStore } from '../stores/useThemeStore';
 import { usePostStore } from '../stores/usePostStore';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -18,7 +19,6 @@ import imageCompression from 'browser-image-compression';
 
 const ToastEditor = forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const divRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<any>(null);
   const editorContentRef = useRef('');
@@ -108,19 +108,16 @@ const ToastEditor = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (id) {
-      getPost();
+      loadPost();
     }
   }, [id]);
 
-  const getPost = async () => {
+  const loadPost = async () => {
     if (!id) return;
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('id', Number(id))
-      .single();
-
-    if (error) {
+    let data: Post;
+    try {
+      data = await getPost(Number(id));
+    } catch (error) {
       console.error(error);
       return;
     }
@@ -133,8 +130,8 @@ const ToastEditor = forwardRef((props, ref) => {
 
       setCreated_At(data.created_at);
       setContentSummary(data.content_summary);
-      setEmail((data as any)?.email);
-      setEventDate((data as any).event_date);
+      setEmail(data.email);
+      setEventDate(data.event_date);
       setIsEdit(true);
       if (editorRef.current) {
         editorRef.current.setMarkdown(data.content);
@@ -194,25 +191,6 @@ const ToastEditor = forwardRef((props, ref) => {
     return uploadBtn;
   };
 
-  const uploadImage = async (blob: Blob, fileName: string) => {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, blob, {
-        contentType: blob.type,
-        upsert: true,
-      });
-    if (error) {
-      console.error('Error Message: ', error);
-      return null;
-    }
-    return fileName;
-  };
-
-  const getImageUrl = (filePath: string) => {
-    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
-    return data.publicUrl;
-  };
-
   const onDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -250,15 +228,9 @@ const ToastEditor = forwardRef((props, ref) => {
         });
       }
 
-      const ext = uploadFile.type.split('/')[1];
-      const fileName = `${Date.now()}.${ext}`;
-
-      const uploadedFileName = await uploadImage(uploadFile, fileName);
-      if (!uploadedFileName) return;
-
-      const publicUrl = getImageUrl(uploadedFileName);
+      const publicUrl = await uploadImage('content', uploadFile);
       setImageUrlArr([...imageUrlArr, publicUrl]);
-      callback(publicUrl, fileName);
+      callback(publicUrl, publicUrl.split('/').pop()); // alt: 저장된 파일 이름
     } catch (error) {
       console.error(error);
     }

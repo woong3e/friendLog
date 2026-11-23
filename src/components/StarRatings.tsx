@@ -1,4 +1,4 @@
-import supabase from '../utils/supabase';
+import { getRatingSummary } from '../api/ratings';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
@@ -13,25 +13,12 @@ const StarRatings = () => {
   useEffect(() => {
     const fetchRating = async () => {
       if (!post_id) return;
-      const { data, error } = await supabase
-        .from('ratings')
-        .select('rating')
-        .eq('post_id', post_id);
-
-      if (!error && data.length > 0) {
-        const avgRating =
-          data.reduce((acc, cur) => acc + cur.rating, 0) / data.length;
-        setAvg(avgRating);
-
-        const counts = Array(10).fill(0);
-        data.forEach((item) => {
-          const index = item.rating * 2 - 1;
-          if (index >= 0 && index < 10) {
-            counts[index] += 1;
-          }
-        });
-        setChartData(counts);
-      } else {
+      try {
+        const { average, distribution } = await getRatingSummary(post_id);
+        setAvg(average);
+        setChartData(distribution);
+      } catch (error) {
+        console.error(error);
         setAvg(null);
         setChartData(Array(10).fill(0));
       }
@@ -130,7 +117,7 @@ const StarRatings = () => {
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-row justify-center mb-6">
         <img
-          src="https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/left-laurel-wreath.png"
+          src="/images/assets/left-laurel-wreath.png"
           alt="left-laurel-wreath"
           className="w-20 h-30"
         />
@@ -138,7 +125,7 @@ const StarRatings = () => {
           {avg?.toFixed(2) || '0.00'}
         </p>
         <img
-          src="https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/right-laurel-wreath.png"
+          src="/images/assets/right-laurel-wreath.png"
           alt="right-laurel-wreath"
           className="w-20 h-30"
         />

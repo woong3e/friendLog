@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import supabase from '../utils/supabase';
+import { signIn } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 
@@ -17,20 +17,12 @@ const Login = () => {
   // }, [session, navigate]);
 
   const loginMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (data) {
-        setSession(data.session);
-        navigate('/');
-      }
-      if (error) {
-        console.error(error.message);
-      }
+    mutationFn: () => signIn(email, password),
+    onSuccess: (session) => {
+      setSession(session);
+      navigate('/');
     },
+    onError: (error) => console.error(error.message),
   });
 
   return (

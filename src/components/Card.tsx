@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { useEffect, useState } from 'react';
-import supabase from '../utils/supabase';
+import { hasRated as fetchHasRated } from '../api/ratings';
+import { getProfileByEmail } from '../api/profiles';
 
 dayjs.extend(duration);
 import { useAuthStore } from '../stores/useAuthStore';
@@ -17,17 +18,14 @@ const Card = ({ post }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!post.email) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('avatar_image_url, nickname')
-        .eq('email', post.email)
-        .single();
-
-      if (data) {
-        setAvatarUrl(data.avatar_image_url);
-        if (data.nickname) {
-          setCurrentNickname(data.nickname);
+      try {
+        const profile = await getProfileByEmail(post.email);
+        setAvatarUrl(profile.avatar_image_url);
+        if (profile.nickname) {
+          setCurrentNickname(profile.nickname);
         }
+      } catch (error) {
+        console.error(error);
       }
     };
     fetchProfile();
@@ -40,17 +38,10 @@ const Card = ({ post }) => {
         return;
       }
 
-      const { data } = await supabase
-        .from('ratings')
-        .select('rating')
-        .eq('post_id', post.id)
-        .eq('user_id', session.user.id)
-        .gte('rating', 0.5)
-        .maybeSingle();
-
-      if (data) {
-        setHasRated(true);
-      } else {
+      try {
+        setHasRated(await fetchHasRated(post.id, session.user.id));
+      } catch (error) {
+        console.error(error);
         setHasRated(false);
       }
     };
@@ -115,7 +106,7 @@ const Card = ({ post }) => {
           src={post.thumbnail_url}
           onError={(e) => {
             e.currentTarget.src =
-              'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/thumbnail-default-light.png';
+              '/images/assets/thumbnail-default-light.png';
             e.currentTarget.style.objectFit = 'contain';
           }}
         />

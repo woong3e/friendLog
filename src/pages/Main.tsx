@@ -1,59 +1,20 @@
 import Card from '../components/Card';
 import { useEffect, useRef, useState } from 'react';
-import supabase from '../utils/supabase';
 import { Link } from 'react-router-dom';
 import Sort from '../components/Sort';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { getPosts, POST_PAGE_SIZE, PostSort } from '../api/posts';
 
 const Main = () => {
-  const [sortOrder, setSortOrder] = useState<
-    'latest' | 'oldest' | 'rating_high' | 'rating_low'
-  >('latest');
+  const [sortOrder, setSortOrder] = useState<PostSort>('latest');
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
       queryKey: ['posts', sortOrder],
-      queryFn: async ({ pageParam = 0 }) => {
-        const from = pageParam * 8;
-        const to = from + 7;
-
-        let query = supabase.from('posts').select().range(from, to);
-
-        switch (sortOrder) {
-          case 'latest':
-            query = query.order('event_date', {
-              ascending: false,
-              nullsFirst: false,
-            });
-            break;
-          case 'oldest':
-            query = query.order('event_date', {
-              ascending: true,
-              nullsFirst: false,
-            });
-            break;
-          case 'rating_high':
-            query = query.order('rating', {
-              ascending: false,
-              nullsFirst: false,
-            });
-            break;
-          case 'rating_low':
-            query = query.order('rating', {
-              ascending: true,
-              nullsFirst: false,
-            });
-            break;
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-        return data;
-      },
+      queryFn: ({ pageParam }) => getPosts(pageParam, sortOrder),
       initialPageParam: 0,
       getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.length < 8) return undefined;
+        if (lastPage.length < POST_PAGE_SIZE) return undefined;
         return allPages.length;
       },
     });

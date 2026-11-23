@@ -8,7 +8,9 @@ import { useState, useEffect } from 'react';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePostStore } from '../stores/usePostStore';
-import supabase from '../utils/supabase';
+import { createPost, updatePost, PostInput } from '../api/posts';
+import { getProfile } from '../api/profiles';
+import { uploadImage, deleteImageByUrl } from '../api/storage';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import imageCompression from 'browser-image-compression';
@@ -17,7 +19,6 @@ import { extractImageUrlsFromMarkdown } from '../utils/imageUtils';
 const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   const [isClosing, setIsClosing] = useState<boolean>(false);
   const navigate = useNavigate();
-  const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const {
     title,
     content,
@@ -39,16 +40,12 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
   useEffect(() => {
     const fetchNickname = async () => {
       if (session?.user?.id) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('nickname')
-          .eq('id', session.user.id)
-          .single();
-
-        if (data?.nickname) {
-          setNickname(data.nickname);
-        } else {
-          setNickname(session.user.user_metadata.nickname);
+        try {
+          const profile = await getProfile(session.user.id);
+          setNickname(profile.nickname || session.user.nickname);
+        } catch (error) {
+          console.error(error);
+          setNickname(session.user.nickname);
         }
       }
     };
@@ -92,39 +89,17 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
 
     try {
       const compressedFile = await imageCompression(file, options);
-      const ext = compressedFile.type.split('/')[1];
-      const fileName = `${Date.now()}.${ext}`;
-      await supabase.storage
-        .from(bucket)
-        .upload(`thumbnail/${fileName}`, compressedFile, {
-          contentType: compressedFile.type,
-          upsert: true,
-        });
-      getThumbnailUrl(`thumbnail/${fileName}`);
+      const url = await uploadImage('thumbnail', compressedFile);
+      setThumbnailUrl(url);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const getThumbnailUrl = (filePath: string) => {
-    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
-    setThumbnailUrl(data.publicUrl);
-
-    return data.publicUrl;
-  };
-
   const deleteImageFromStorage = async (url: string) => {
     if (!url) return;
     try {
-      const path = url.split(`${bucket}/`)[1];
-      if (path) {
-        const { data, error } = await supabase.storage
-          .from(bucket)
-          .remove([path]);
-        if (error) {
-          console.error('Error deleting image:', error);
-        }
-      }
+      await deleteImageByUrl(url);
     } catch (error) {
       console.error('Error deleting image', error);
     }
@@ -175,7 +150,7 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
     return usedUrls;
   };
 
-  const postData = {
+  const postData: PostInput = {
     title: title,
     content: content,
     image_url: JSON.stringify(imageUrlArr),
@@ -202,15 +177,11 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       image_url: JSON.stringify(finalImageUrls),
     };
 
-    const { error } = await supabase
-      .from('posts')
-      .insert([finalPostData])
-      .single();
-
-    if (error) {
-      console.error('Error Message: ', error);
-    } else {
+    try {
+      await createPost(finalPostData);
       navigate('/');
+    } catch (error) {
+      console.error('Error Message: ', error);
     }
   };
 
@@ -231,15 +202,11 @@ const EditorModal = ({ visible, setVisible }: EditorModalProps) => {
       image_url: JSON.stringify(finalImageUrls),
     };
 
-    const { error } = await supabase
-      .from('posts')
-      .update(finalPostData)
-      .eq('id', Number(id));
-
-    if (error) {
-      console.error('Error Message: ', error);
-    } else {
+    try {
+      await updatePost(Number(id), finalPostData);
       navigate('/');
+    } catch (error) {
+      console.error('Error Message: ', error);
     }
   };
 

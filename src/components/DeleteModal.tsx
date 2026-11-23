@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
-import supabase from '../utils/supabase';
+import { deletePost } from '../api/posts';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const DeleteModal = ({ openDeleteModal, setOpenDeleteModal }) => {
@@ -26,9 +26,14 @@ const DeleteModal = ({ openDeleteModal, setOpenDeleteModal }) => {
 
   if (!openDeleteModal && !isClosing) return null;
 
-  const deletePost = async () => {
-    await supabase.from('posts').delete().eq('id', Number(id));
-    navigate('/');
+  const handleDelete = async () => {
+    try {
+      await deletePost(Number(id));
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      alert('삭제에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return createPortal(
@@ -51,7 +56,7 @@ const DeleteModal = ({ openDeleteModal, setOpenDeleteModal }) => {
           </button>
           <button
             className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-500 cursor-pointer"
-            onClick={deletePost}
+            onClick={handleDelete}
           >
             확인
           </button>
