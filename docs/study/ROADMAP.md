@@ -43,10 +43,11 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 ## 1단계. 로컬 환경 + 게시글 CRUD (2주)
 
 - [x] Spring Boot 프로젝트 생성 (`server/`), Docker Compose로 MySQL
-- [ ] Member / Post / Rating 엔티티
-- [ ] 게시글 CRUD (인증 없이)
-- [ ] 무한 스크롤용 페이징, 정렬(최신순·평점순)
-- [ ] 입력 검증, 전역 예외 처리, 공통 응답 형식
+- [x] Member / Post / Rating / PostImage 엔티티, Flyway V1
+- [x] 게시글 CRUD (인증 없이, 작성자는 임시로 `X-Member-Id` 헤더)
+- [x] 무한 스크롤용 페이징, 정렬(최신순·오래된순·평점순), 목록 쿼리 3번 고정(N+1 없음)
+- [x] 입력 검증, 전역 예외 처리, 에러 응답 형식
+- [x] 통합 테스트 (MockMvc + Testcontainers)
 - 배울 것: JPA 매핑, 영속성 컨텍스트, 트랜잭션, 페이징, N+1
 
 ## 2단계. 인증 (2주)
@@ -59,7 +60,7 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 ## 3단계. 평가·프로필 (1주)
 
 - [ ] 별점 등록·수정, 평균 평점과 점수 분포
-- [ ] 평균을 저장할지 매번 계산할지 결정 (저장하면 동시성 처리)
+- [x] 평균을 저장할지 매번 계산할지 결정 → 매번 계산 (1단계 목록 구현 때 결정)
 - [ ] 닉네임 수정
 - 배울 것: 집계 쿼리, 동시성, 비정규화 판단
 
