@@ -1,0 +1,29 @@
+# 로컬 개발용 MySQL
+# 실행: docker compose up -d   /   중지: docker compose down   (데이터는 볼륨에 남음)
+# 데이터까지 지우기: docker compose down -v
+name: friendlog # 폴더 이름과 상관없이 컨테이너·볼륨 이름을 고정 (friendlog_mysql-data)
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: friendlog-mysql
+    environment:
+      MYSQL_DATABASE: friendlog
+      MYSQL_USER: friendlog
+      MYSQL_PASSWORD: friendlog # 로컬 전용 값. 운영 비밀번호는 6단계에서 환경 변수로 관리
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    ports:
+      - "3307:3306" # 내 Mac의 3307 → 컨테이너의 3306. Mac에 설치된 MySQL이 3306을 쓰고 있어서 피함
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ufriendlog", "-pfriendlog"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql-data:

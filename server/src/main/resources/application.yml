@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: friendlog-server
+
+  # 로컬은 compose.yaml의 MySQL에 접속. 운영은 6단계에서 환경 변수(DB_URL 등)로 덮어쓴다.
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3307/friendlog?serverTimezone=Asia/Seoul}
+    username: ${DB_USERNAME:friendlog}
+    password: ${DB_PASSWORD:friendlog}
+
+  jpa:
+    hibernate:
+      ddl-auto: none # 테이블을 누가 만들지는 1-2(엔티티)에서 결정

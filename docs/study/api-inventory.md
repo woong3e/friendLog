@@ -3,7 +3,7 @@
 준비 단계에서 `src/api/` 로 모은 함수 목록. 각 함수가 곧 서버가 제공해야 할 기능이다.
 REST 엔드포인트(URL, 메서드, 응답 형식)는 0단계에서 이 표를 보고 직접 설계한다.
 
-## posts — [src/api/posts.ts](../../src/api/posts.ts)
+## posts — [src/api/posts.ts](../../frontend/src/api/posts.ts)
 
 | 함수 | 입력 | 출력 | 쓰는 곳 |
 | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ REST 엔드포인트(URL, 메서드, 응답 형식)는 0단계에서 이 표를 
 | `updatePost` | id + 위와 같음 | 없음 | 글 수정 |
 | `deletePost` | id | 없음 | 글 삭제 |
 
-## ratings — [src/api/ratings.ts](../../src/api/ratings.ts)
+## ratings — [src/api/ratings.ts](../../frontend/src/api/ratings.ts)
 
 | 함수 | 입력 | 출력 | 쓰는 곳 |
 | --- | --- | --- | --- |
@@ -22,7 +22,7 @@ REST 엔드포인트(URL, 메서드, 응답 형식)는 0단계에서 이 표를 
 | `hasRated` | postId, userId | boolean | 메인 카드 "평가함" 표시 |
 | `upsertRating` | postId, userId, 별점, 코멘트, 닉네임 | 없음 | 평가 등록·수정 |
 
-## profiles — [src/api/profiles.ts](../../src/api/profiles.ts)
+## profiles — [src/api/profiles.ts](../../frontend/src/api/profiles.ts)
 
 | 함수 | 입력 | 출력 | 쓰는 곳 |
 | --- | --- | --- | --- |
@@ -31,14 +31,14 @@ REST 엔드포인트(URL, 메서드, 응답 형식)는 0단계에서 이 표를 
 | `updateNickname` | userId, 닉네임 | Profile | 내 설정 |
 | `updateAvatarUrl` | userId, URL 또는 null | 없음 | 내 설정 (아바타 변경·삭제) |
 
-## storage — [src/api/storage.ts](../../src/api/storage.ts)
+## storage — [src/api/storage.ts](../../frontend/src/api/storage.ts)
 
 | 함수 | 입력 | 출력 | 쓰는 곳 |
 | --- | --- | --- | --- |
 | `uploadImage` | 폴더(`thumbnail`·`avatar-image`·`content`), 파일 | 공개 URL | 썸네일, 아바타, 본문 이미지 |
 | `deleteImageByUrl` | 공개 URL | 없음 | 썸네일 삭제, 아바타 삭제, 본문에서 지운 이미지 정리 |
 
-## auth — [src/api/auth.ts](../../src/api/auth.ts)
+## auth — [src/api/auth.ts](../../frontend/src/api/auth.ts)
 
 | 함수 | 입력 | 출력 | 쓰는 곳 |
 | --- | --- | --- | --- |
@@ -69,6 +69,6 @@ REST 엔드포인트(URL, 메서드, 응답 형식)는 0단계에서 이 표를 
 
 공개 이미지 4개가 Supabase Storage 주소로 코드에 직접 적혀 있음. 호출이 아니라 이미지 주소라 이번에는 두었다. `public/` 폴더로 옮기면 Supabase와 무관해진다.
 
-- 기본 썸네일 [Card.tsx](../../src/components/Card.tsx)
-- 월계관 이미지 2개 [StarRatings.tsx](../../src/components/StarRatings.tsx)
-- 공유 미리보기 기본 이미지 [ToastViewer.tsx](../../src/pages/ToastViewer.tsx)
+- 기본 썸네일 [Card.tsx](../../frontend/src/components/Card.tsx)
+- 월계관 이미지 2개 [StarRatings.tsx](../../frontend/src/components/StarRatings.tsx)
+- 공유 미리보기 기본 이미지 [ToastViewer.tsx](../../frontend/src/pages/ToastViewer.tsx)

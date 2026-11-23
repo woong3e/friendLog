@@ -42,7 +42,7 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 
 ## 1단계. 로컬 환경 + 게시글 CRUD (2주)
 
-- [ ] Spring Boot 프로젝트 생성 (`friendlog-server`), Docker Compose로 MySQL
+- [x] Spring Boot 프로젝트 생성 (`server/`), Docker Compose로 MySQL
 - [ ] Member / Post / Rating 엔티티
 - [ ] 게시글 CRUD (인증 없이)
 - [ ] 무한 스크롤용 페이징, 정렬(최신순·평점순)
@@ -71,7 +71,7 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 
 ## 5단계. 프론트 전환 (1~2주, `feat/api-migration`)
 
-- [ ] `src/api/*.ts` 내부를 내 서버 호출로 교체 (React Query 유지)
+- [ ] `frontend/src/api/*.ts` 내부를 내 서버 호출로 교체 (React Query 유지)
 - [ ] 로그인 상태 관리를 내 토큰 방식으로 교체
 - 배울 것: CORS, 토큰 재발급 흐름
 

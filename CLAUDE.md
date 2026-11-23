@@ -3,11 +3,22 @@
 친구들과의 정기 모임을 사진과 함께 기록하고 별점·한줄평으로 평가하는 서비스.
 운영 중: https://www.wondang.xyz (Vercel)
 
-현재 스택: React 18, TypeScript, Vite, TanStack Query, Zustand, Tailwind v4, Toast UI Editor, Supabase(Auth · PostgreSQL · Storage)
+## 레포 구조 (모노레포)
+
+```
+frontend/   React 앱 (Vercel, Root Directory = frontend)
+            React 18, TypeScript, Vite, TanStack Query, Zustand, Tailwind v4, Toast UI Editor, Supabase(Auth · PostgreSQL · Storage)
+server/     Spring Boot 4 + Java 21 + Gradle, MySQL 8.4 (로컬: server/compose.yaml, 포트 3307), Flyway
+docs/       설계(design/)와 학습 기록(study/)
+```
+
+- 프론트 명령은 `frontend/` 에서 (`npm run dev`), 서버 명령은 `server/` 에서 (`docker compose up -d`, `./gradlew bootRun`)
+- DB 스키마는 `server/src/main/resources/db/migration/` 의 Flyway SQL로만 바꾼다. 적용된 파일은 수정하지 않고 새 버전을 추가한다 (`ddl-auto: validate`)
+- 이 Mac에는 별도 설치된 MySQL이 3306을 쓰고 있어서 컨테이너는 3307로 연다
 
 ## 고도화 목표
 
-Supabase를 완전히 걷어내고 **Spring Boot + MySQL** 서버(새 레포 `friendlog-server`)로 이전한다. 실서비스로 계속 동작해야 하므로 서버도 배포한다.
+Supabase를 완전히 걷어내고 **Spring Boot + MySQL** 서버(`server/`)로 이전한다. 실서비스로 계속 동작해야 하므로 서버도 배포한다.
 전체 계획과 진행 상황은 [docs/study/ROADMAP.md](docs/study/ROADMAP.md), 학습 기록은 [docs/study/LOG.md](docs/study/LOG.md).
 
 ## Claude와 진행하는 방식
@@ -27,11 +38,13 @@ Supabase를 완전히 걷어내고 **Spring Boot + MySQL** 서버(새 레포 `fr
 - **이미지:** S3 + Presigned URL. 클라이언트 WebP 압축은 유지. DB에는 URL만 저장
 - **배포:** 미정. 후보는 EC2 + RDS / EC2 한 대 + Docker Compose(앱 + MySQL). 6단계 전에 AWS 요금을 확인하고 결정
   - Docker MySQL을 고르면 백업(`mysqldump` → S3, 정기 실행, 복원 연습)을 직접 구성해야 한다
-- **레포:** 프론트는 이 레포 그대로, 서버는 `friendlog-server` 새 레포
+- **레포:** 모노레포 (`frontend/` + `server/`). 혼자 개발하고, 설계 문서와 5단계 프론트 전환을 한 곳에서 다루기 위해 (2026-11-23 멀티레포에서 변경)
+- **브랜치 전략:** main + 단계별 브랜치 (GitHub Flow). dev 브랜치·스테이징은 6단계에서 재검토
+- **스키마 관리:** Flyway + `ddl-auto: validate`
 - **전환 방식:** 새 시스템 완성 → 운영 데이터 복사본으로 리허설 → 공지 후 점검 시간에 한 번에 전환. Supabase는 전환 후 약 2주간 읽기 전용으로 두었다가 삭제
-- **Supabase 코드:** 먼저 호출을 `src/api/` 로 모으고, 전환은 `feat/api-migration` 브랜치에서. 전환 후 main에 Supabase 코드가 남지 않게 정리
-  - 삭제 대상: `@supabase/supabase-js`, `src/api/supabaseClient.ts`, `database.types.ts`, `supabase/`, 환경 변수(Vercel 포함)
-  - 확인: `grep -rni "supabase" src package.json`
+- **Supabase 코드:** 호출은 `frontend/src/api/` 에 모여 있다. 전환은 `feat/api-migration` 브랜치에서. 전환 후 main에 Supabase 코드가 남지 않게 정리
+  - 삭제 대상: `@supabase/supabase-js`, `frontend/src/api/supabaseClient.ts`, `frontend/database.types.ts`, `frontend/supabase/`, 환경 변수(Vercel 포함)
+  - 확인: `grep -rni "supabase" frontend/src frontend/package.json`
 
 ## 이미 해결한 문제 (포트폴리오 소재)
 
@@ -44,5 +57,5 @@ Supabase를 완전히 걷어내고 **Spring Boot + MySQL** 서버(새 레포 `fr
 - 작성자 확인을 클라이언트에서만 함 (email 비교). 레포에 RLS 정책 SQL 없음
 - 테스트, CI 없음. TypeScript strict 꺼져 있음
 - 글을 등록하지 않고 나가면 업로드한 이미지가 남음
-- `SignUp.tsx` 의 `emailRedirectTo` 가 localhost로 하드코딩
-- `supabase/.temp/` 파일(pooler-url 등)이 git에 커밋되어 있음 → 내용 확인 필요
+- `frontend/src/api/auth.ts` 의 `emailRedirectTo` 가 localhost로 하드코딩
+- `frontend/supabase/.temp/` 파일(pooler-url 등)이 git에 커밋되어 있음 → 내용 확인 필요
