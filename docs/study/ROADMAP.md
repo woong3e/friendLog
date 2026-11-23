@@ -67,8 +67,8 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 
 ## 4단계. 이미지 (1~2주)
 
-- [ ] S3 Presigned URL 업로드, 썸네일·프로필 사진
-- [ ] 쓰이지 않는 이미지 정리 `@Scheduled`
+- [x] S3 Presigned URL 업로드 (썸네일·프로필·본문), 로컬은 S3Mock
+- [x] 쓰이지 않는 이미지 정리 `@Scheduled` (매일 04시, 24시간 유예)
 - 배울 것: S3, Presigned URL, 스케줄러
 
 ## 5단계. 프론트 전환 (1~2주, `feat/api-migration`)

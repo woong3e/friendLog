@@ -34,5 +34,15 @@ services:
       - "1025:1025" # SMTP (앱 → 메일 서버)
       - "8025:8025" # 웹 화면
 
+  # 로컬 개발용 가짜 S3. 운영은 AWS S3 (6단계).
+  # 브라우저가 Presigned URL로 여기에 직접 PUT하고, 이미지는 http://localhost:9090/friendlog/... 로 보인다.
+  s3:
+    image: adobe/s3mock:5.2.3
+    container_name: friendlog-s3
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: friendlog
+    ports:
+      - "9090:9090"
+
 volumes:
   mysql-data:

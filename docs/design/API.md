@@ -259,13 +259,19 @@
 
 ---
 
-## 이미지 (4단계에서 확정)
+## 이미지 (4단계 구현 완료)
 
 ### `POST /images/presigned-url`
 
 요청
 ```json
 { "folder": "thumbnail", "contentType": "image/webp" }
+```
+
+- `folder`: `thumbnail` | `avatar` | `content`
+- `contentType`: `image/webp` | `image/jpeg` | `image/png` | `image/gif`
+
+```json
 ```
 
 `200 OK`
@@ -277,7 +283,10 @@
 ```
 
 프론트는 `uploadUrl` 로 S3에 직접 PUT하고, 글·프로필에는 `imageUrl` 을 저장한다.
-삭제 API는 두지 않는다 — 쓰이지 않는 이미지는 서버가 `@Scheduled` 로 정리 (지금처럼 프론트가 지우지 않음).
+PUT 할 때 `Content-Type` 헤더를 요청한 값과 똑같이 보내야 한다 (서명에 포함).
+
+삭제 API는 두지 않는다. 발급할 때마다 `uploaded_image` 에 기록하고, 매일 04시에 "24시간이 지났는데 썸네일·본문·아바타 어디에도 쓰이지 않는 파일"을 서버가 지운다.
+로컬은 S3 대신 S3Mock (`http://localhost:9090/friendlog/...`).
 
 ---
 
