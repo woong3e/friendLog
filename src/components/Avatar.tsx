@@ -1,4 +1,5 @@
-import supabase from '../utils/supabase';
+import { getProfile } from '../api/profiles';
+import { signOut } from '../api/auth';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,15 +15,12 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
     const fetchUserProfile = async () => {
       if (!session?.user?.id) return;
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('avatar_image_url, nickname')
-        .eq('id', session.user.id)
-        .single();
-
-      if (data) {
-        setAvatarImageUrl(data.avatar_image_url);
-        setNickname(data.nickname);
+      try {
+        const profile = await getProfile(session.user.id);
+        setAvatarImageUrl(profile.avatar_image_url);
+        setNickname(profile.nickname);
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -31,13 +29,13 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
 
   const clearSession = useAuthStore((state) => state.clearSession);
 
-  const signOut = async () => {
+  const handleSignOut = async () => {
     clearSession();
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error(error.message);
-    } else {
+    try {
+      await signOut();
       navigate('/');
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -91,7 +89,7 @@ const Avatar = ({ isAvatarMenuOpen, toggleAvatarMenu }) => {
           <ul className="flex flex-col p-2 font-medium ">
             <li>
               <a
-                onClick={signOut}
+                onClick={handleSignOut}
                 className="block w-full px-3 py-2 rounded-sm hover:bg-gray-100  dark:hover:bg-gray-600 cursor-pointer"
               >
                 로그아웃

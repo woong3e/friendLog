@@ -9,7 +9,8 @@ import ReactStars from 'react-rating-stars-component';
 import { useParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useProfileStore } from '../stores/useProfileStore';
-import supabase from '../utils/supabase';
+import { upsertRating, RatingInput } from '../api/ratings';
+import { getProfile } from '../api/profiles';
 
 const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
   const { id } = useParams();
@@ -24,14 +25,13 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
     const fetchProfile = async () => {
       if (nickname || !user_id) return;
 
-      const { data } = await supabase
-        .from('profiles')
-        .select('nickname')
-        .eq('id', user_id)
-        .single();
-
-      if (data?.nickname) {
-        setNickname(data.nickname);
+      try {
+        const profile = await getProfile(user_id);
+        if (profile.nickname) {
+          setNickname(profile.nickname);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
@@ -71,7 +71,7 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
 
   const handleSubmitReview = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const ratingData = {
+    const ratingData: RatingInput = {
       post_id: post_id,
       user_id: user_id,
       rating: rating,
@@ -79,12 +79,9 @@ const ReviewModal = ({ visible, setVisible, isClosing, setIsClosing }) => {
       nickname: nickname,
     };
 
-    const { data, error } = await supabase
-      .from('ratings')
-      .upsert([ratingData])
-      .single();
-
-    if (error) {
+    try {
+      await upsertRating(ratingData);
+    } catch (error) {
       console.error('Error Message: ', error);
     }
 

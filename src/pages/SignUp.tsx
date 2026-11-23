@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import supabase from '../utils/supabase';
+import { signUp } from '../api/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,27 +12,7 @@ const SignUp = () => {
 
   const signupMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `http://localhost:5173/signup/otp?email=${email}`,
-          data: {
-            nickname: nickname,
-          },
-        },
-      });
-
-      const user = data?.user;
-      if (!user) throw new Error('회원 정보가 없습니다.');
-
-      await supabase
-        .from('profiles')
-        .update({
-          nickname: nickname,
-        })
-        .eq('id', user.id);
-
+      await signUp(email, password, nickname);
       navigate(`/signup/otp?email=${email}`);
     },
   });

@@ -1,4 +1,4 @@
-import supabase from '../utils/supabase';
+import { getRatingSummary } from '../api/ratings';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
@@ -13,25 +13,12 @@ const StarRatings = () => {
   useEffect(() => {
     const fetchRating = async () => {
       if (!post_id) return;
-      const { data, error } = await supabase
-        .from('ratings')
-        .select('rating')
-        .eq('post_id', post_id);
-
-      if (!error && data.length > 0) {
-        const avgRating =
-          data.reduce((acc, cur) => acc + cur.rating, 0) / data.length;
-        setAvg(avgRating);
-
-        const counts = Array(10).fill(0);
-        data.forEach((item) => {
-          const index = item.rating * 2 - 1;
-          if (index >= 0 && index < 10) {
-            counts[index] += 1;
-          }
-        });
-        setChartData(counts);
-      } else {
+      try {
+        const { average, distribution } = await getRatingSummary(post_id);
+        setAvg(average);
+        setChartData(distribution);
+      } catch (error) {
+        console.error(error);
         setAvg(null);
         setChartData(Array(10).fill(0));
       }

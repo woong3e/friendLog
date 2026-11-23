@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import supabase from '../utils/supabase';
+import { getProfile, updateAvatarUrl, updateNickname } from '../api/profiles';
+import { uploadImage, deleteImageByUrl } from '../api/storage';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '../stores/useAuthStore';
@@ -7,7 +8,6 @@ import { useProfileStore } from '../stores/useProfileStore';
 import imageCompression from 'browser-image-compression';
 
 const UserSettings = () => {
-  const bucket = import.meta.env.VITE_PUBLIC_STORAGE_BUCKET;
   const [isEdit, setIsEdit] = useState<boolean>(true);
   const [editedNickname, setEditedNickname] = useState<string>('');
   const { getRootProps, getInputProps, open, acceptedFiles } = useDropzone({
@@ -33,20 +33,14 @@ const UserSettings = () => {
   const fetchUserProfiles = async () => {
     if (!session?.user?.id) return;
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', session.user.id)
-      .single();
-
-    if (error) {
+    try {
+      const profile = await getProfile(session.user.id);
+      setNickname(profile.nickname);
+      setAvatarImageUrl(profile.avatar_image_url);
+      setEditedNickname(profile.nickname);
+    } catch (error) {
       console.error('Error fetching profile:', error);
-    } else if (data) {
-      setNickname(data.nickname);
-      setAvatarImageUrl(data.avatar_image_url);
-      setEditedNickname(data.nickname);
     }
-    return data;
   };
 
   // upload Storage
@@ -63,22 +57,11 @@ const UserSettings = () => {
 
     try {
       const compressedFile = await imageCompression(file, options);
-      const ext = compressedFile.type.split('/')[1];
-      const fileName = `${Date.now()}.${ext}`;
-
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(`avatar-image/${fileName}`, compressedFile, {
-          contentType: compressedFile.type,
-          upsert: true,
-        });
-
-      if (error) {
-        console.error('upload Failed', error);
-      }
-      return getAvatarImageUrl(`avatar-image/${fileName}`);
+      const url = await uploadImage('avatar-image', compressedFile);
+      setAvatarImageUrl(url);
+      return url;
     } catch (error) {
-      console.error(error);
+      console.error('upload Failed', error);
     }
   };
 
@@ -88,68 +71,38 @@ const UserSettings = () => {
       if (!url) return;
       setAvatarImageUrl(url);
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ avatar_image_url: url })
-        .eq('id', session.user.id);
-
-      if (error) console.error('Error updating avatar in profile:', error);
+      try {
+        await updateAvatarUrl(session.user.id, url);
+      } catch (error) {
+        console.error('Error updating avatar in profile:', error);
+      }
     },
   });
 
-  const getAvatarImageUrl = (filePath: string) => {
-    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
-    setAvatarImageUrl(data.publicUrl);
-    return data.publicUrl;
-  };
-
-  const removeAvatarImage = async () => {
-    const parts = avatarImageUrl.split('avatar-image/');
-    const fileName = parts[1];
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .remove([`avatar-image/${fileName}`]);
-    if (error) {
-      console.error('삭제 실패:', error);
-    }
-  };
-
   const handleRemove = async () => {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ avatar_image_url: null })
-      .eq('id', session.user.id);
-
-    if (error) {
+    try {
+      await updateAvatarUrl(session.user.id, null);
+    } catch (error) {
       console.error(error);
       return;
     }
 
-    await removeAvatarImage();
+    try {
+      await deleteImageByUrl(avatarImageUrl);
+    } catch (error) {
+      console.error('삭제 실패:', error);
+    }
     setAvatarImageUrl(null);
   };
 
   //edit nickname
   const editNicknameMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ nickname: editedNickname })
-        .eq('id', session.user.id)
-        .select();
-
-      if (error) {
-        console.error(error);
-        throw error;
-      }
-      return data;
-    },
-    onSuccess: (data) => {
-      if (data && data.length > 0) {
-        setNickname(data[0].nickname);
-      }
+    mutationFn: () => updateNickname(session.user.id, editedNickname),
+    onSuccess: (profile) => {
+      setNickname(profile.nickname);
       setIsEdit(true);
     },
+    onError: (error) => console.error(error),
   });
 
   return (

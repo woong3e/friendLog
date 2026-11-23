@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import supabase from '../utils/supabase';
+import { verifyEmailOtp } from '../api/auth';
 import { useAuthStore } from '../stores/useAuthStore';
 
 const OtpInput = () => {
@@ -25,21 +25,18 @@ const OtpInput = () => {
 
   const verifyOtpMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'email',
-      });
-
-      if (error) {
+      let session;
+      try {
+        session = await verifyEmailOtp(email, otp);
+      } catch (error) {
         alert(error.message);
         setOtpArr(Array(6).fill('')); // 실패 시 입력 초기화
         inputRefs.current[0]?.focus();
         return;
       }
 
-      if (data?.session) {
-        setSession(data.session);
+      if (session) {
+        setSession(session);
       }
 
       navigate('/');
