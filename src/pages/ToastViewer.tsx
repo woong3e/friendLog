@@ -127,7 +127,7 @@ const ToastViewer = () => {
           property="og:image"
           content={
             thumbnailUrl ||
-            'https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/1756556110914.jpg'
+            `${window.location.origin}/images/assets/og-default.jpg`
           }
         />
         <meta property="og:url" content={window.location.href} />

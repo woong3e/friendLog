@@ -117,7 +117,7 @@ const StarRatings = () => {
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-row justify-center mb-6">
         <img
-          src="https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/left-laurel-wreath.png"
+          src="/images/assets/left-laurel-wreath.png"
           alt="left-laurel-wreath"
           className="w-20 h-30"
         />
@@ -125,7 +125,7 @@ const StarRatings = () => {
           {avg?.toFixed(2) || '0.00'}
         </p>
         <img
-          src="https://fdngliaptbsfvxvygvgi.supabase.co/storage/v1/object/public/friendlog/public-assets/right-laurel-wreath.png"
+          src="/images/assets/right-laurel-wreath.png"
           alt="right-laurel-wreath"
           className="w-20 h-30"
         />
