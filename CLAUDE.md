@@ -13,6 +13,7 @@ docs/       설계(design/)와 학습 기록(study/)
 ```
 
 - 프론트 명령은 `frontend/` 에서 (`npm run dev`), 서버 명령은 `server/` 에서 (`docker compose up -d`, `./gradlew bootRun`)
+- 새 프론트(`feat/api-migration`)를 로컬에서 돌리려면: `server/` 에서 `docker compose up -d` + `./gradlew bootRun`, `frontend/` 에서 `npm run dev` (API 주소 기본값 http://localhost:8080)
 - DB 스키마는 `server/src/main/resources/db/migration/` 의 Flyway SQL로만 바꾼다. 적용된 파일은 수정하지 않고 새 버전을 추가한다 (`ddl-auto: validate`)
 - 이 Mac에는 별도 설치된 MySQL이 3306을 쓰고 있어서 컨테이너는 3307로 연다
 - 로컬에서 서버가 보낸 메일(가입 인증 코드)은 Mailpit에서 확인: http://localhost:8025
@@ -45,7 +46,7 @@ Supabase를 완전히 걷어내고 **Spring Boot + MySQL** 서버(`server/`)로 
 - **브랜치 전략:** main + 단계별 브랜치 (GitHub Flow). dev 브랜치·스테이징은 6단계에서 재검토
 - **스키마 관리:** Flyway + `ddl-auto: validate`
 - **전환 방식:** 새 시스템 완성 → 운영 데이터 복사본으로 리허설 → 공지 후 점검 시간에 한 번에 전환. Supabase는 전환 후 약 2주간 읽기 전용으로 두었다가 삭제
-- **Supabase 코드:** 호출은 `frontend/src/api/` 에 모여 있다. 전환은 `feat/api-migration` 브랜치에서. 전환 후 main에 Supabase 코드가 남지 않게 정리
+- **Supabase 코드:** main의 프론트는 아직 Supabase를 쓴다 (운영 중). Spring 서버로 바꾼 프론트는 `feat/api-migration` 브랜치에 완성되어 있고, 7단계 전환 때 main에 머지한다 (그 브랜치에는 Supabase 코드가 없다)
   - 삭제 대상: `@supabase/supabase-js`, `frontend/src/api/supabaseClient.ts`, `frontend/database.types.ts`, `frontend/supabase/`, 환경 변수(Vercel 포함)
   - 확인: `grep -rni "supabase" frontend/src frontend/package.json`
 

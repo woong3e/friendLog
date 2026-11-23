@@ -2,8 +2,46 @@
 
 대화마다 하나씩, 최신이 위로.
 
-> 1~5단계는 Claude가 구현·커밋하고 사용자가 나중에 코드를 읽는 방식으로 진행 (2026-11-23 결정).
+> 1~5단계는 Claude가 구현·커밋하고 사용자가 나중에 코드를 읽는 방식으로 진행 (2026-11-23 결정). 5단계까지 완료.
 > 아래 단계별 기록의 "읽는 순서"를 따라가면 된다.
+
+---
+
+## 2026-11-23 · 5단계: 프론트 전환
+
+브랜치: `feat/cors` → main (서버 CORS), `feat/api-migration` (프론트, **main에 머지하지 않음** — 7단계 전환 때 머지)
+
+**읽는 순서** (`frontend/src/`)
+1. `api/client.ts` (토큰 보관, 401 → 재발급 → 재시도, single-flight)
+2. `api/auth.ts` (세션 복원·로그인 상태 알림) → `App.tsx`
+3. `api/posts.ts`, `ratings.ts`, `members.ts`, `storage.ts` (서버 응답 타입, Presigned URL 업로드)
+4. 컴포넌트: `components/Card.tsx`(목록 응답만 사용), `pages/ToastViewer.tsx`, `components/EditorModal.tsx`
+5. 서버 쪽: `server/.../auth/security/SecurityConfig.corsConfigurationSource`
+
+**개념**
+- CORS: 다른 출처(5173 → 8080) 요청은 브라우저가 막고, 서버가 허용 헤더로 풀어 준다. 쿠키를 주고받으려면 `credentials: 'include'` + 서버 `allowCredentials` + 출처 목록 지정(* 불가)
+- 토큰 보관: 액세스 토큰은 메모리(XSS로 localStorage 읽기 방지), 새로고침하면 사라지므로 HttpOnly 리프레시 쿠키로 다시 받음
+- 재발급 흐름: API가 401 → `/auth/refresh` → 새 토큰으로 같은 요청 재시도. 리프레시 토큰이 회전하므로 동시 재발급을 하나로 합침 (single-flight)
+- API 계층 분리의 효과: 준비 단계에서 `src/api` 로 모아 둬서, 바뀐 건 api 파일 + 응답 모양이 달라진 컴포넌트 몇 곳
+
+**결정 (Claude가 추천안으로 정함)**
+| 결정 | 이유 |
+| --- | --- |
+| 응답 타입을 서버 그대로(camelCase)로, 컴포넌트를 고침 | 예전 모양으로 변환해 맞추면 "카드마다 요청" 같은 구조를 못 없앰 |
+| 이미지 삭제 호출 제거 | 서버 정리 스케줄러로 일원화 (4단계) |
+| 별점 없이 제출하면 막음 | 서버가 0.5~5.0만 받음. 기존에는 0점이 저장되기도 했음 |
+| 서버 에러 메시지를 alert로 | 기존 화면은 실패해도 아무 반응이 없었음 (예: 이미 가입된 이메일) |
+| 7단계까지 브랜치로 유지 | main은 운영(Supabase) 그대로 배포되어야 하므로 |
+
+**발견했지만 그대로 둔 기존 문제** (이번 범위 밖)
+- `EditorModal`·`UserSettings` 등에 React Hook 규칙 위반 lint 에러 (조건부 hook 호출) — 기존 코드
+- `usePostStore.setImageUrlArr` 가 덮어쓰지 않고 이어 붙임 → 글 불러오기에는 `replaceImageUrlArr` 를 추가해서 사용
+- 별점 라이브러리 `react-rating-stars-component` 의 defaultProps 경고
+
+**6·7단계로 넘길 것**
+- 운영 환경 변수: 프론트 `VITE_API_URL=https://api.wondang.xyz`, 서버 `CORS_ALLOWED_ORIGINS=https://www.wondang.xyz`, `REFRESH_COOKIE_SECURE=true`, `JWT_SECRET`, DB·메일(SMTP)·S3 설정
+- 운영 메일 발송 서비스 선택 (Supabase 기본 메일 대신. 예: AWS SES)
+- 7단계: 기존 회원 이전(비밀번호 해시), 이미지 URL 교체, `feat/api-migration` 머지 → Vercel 배포
 
 ---
 

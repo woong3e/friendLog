@@ -73,8 +73,11 @@ Spring Boot (EC2, api.wondang.xyz) ──▶ MySQL (RDS 또는 EC2 안 Docker, 6
 
 ## 5단계. 프론트 전환 (1~2주, `feat/api-migration`)
 
-- [ ] `frontend/src/api/*.ts` 내부를 내 서버 호출로 교체 (React Query 유지)
-- [ ] 로그인 상태 관리를 내 토큰 방식으로 교체
+- [x] 서버 CORS 허용 (main에 머지)
+- [x] `frontend/src/api/*.ts` 내부를 내 서버 호출로 교체 (React Query 유지)
+- [x] 로그인 상태 관리를 내 토큰 방식으로 교체 (메모리 액세스 토큰 + 리프레시 쿠키, 401 시 재발급)
+- [x] Supabase 패키지·코드 제거 (`feat/api-migration` 브랜치에서. main 머지는 7단계 전환 때)
+- [x] 브라우저 E2E 확인: 가입(메일 코드) → 새로고침 유지 → 글·썸네일 → 다른 사용자 평가 → 프로필 → 로그아웃
 - 배울 것: CORS, 토큰 재발급 흐름
 
 ## 6단계. 배포 (1~2주)

@@ -271,9 +271,6 @@
 - `folder`: `thumbnail` | `avatar` | `content`
 - `contentType`: `image/webp` | `image/jpeg` | `image/png` | `image/gif`
 
-```json
-```
-
 `200 OK`
 ```json
 {
