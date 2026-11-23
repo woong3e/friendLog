@@ -7,6 +7,37 @@
 
 ---
 
+## 2026-11-23 · 4단계: 이미지
+
+브랜치: `feat/image-upload` → main
+
+**읽는 순서** (`server/src/main/java/xyz/wondang/friendlog/image/`)
+1. `ImageController` (업로드 흐름 주석) → `ImageService.issueUploadUrl`
+2. `ImageStorage` → `S3ImageStorage` (Presigned URL 서명)
+3. `resources/db/migration/V3__create_uploaded_image.sql` → `UploadedImageRepository.findUnused` → `ImageService.cleanupUnused` → `ImageCleanupScheduler`
+4. 테스트: `image/ImageApiTest`
+
+**개념**
+- Presigned URL: 서버가 서명만 해 주고 브라우저가 S3에 직접 올림 → 이미지가 서버를 거치지 않음. 서명은 로컬 계산이라 S3 요청이 없음
+- 서명에 Content-Type 포함 → 다른 형식으로 바꿔 올릴 수 없음
+- 인터페이스로 저장소를 감싸서(ImageStorage) 테스트에서는 삭제만 가짜로 (`@MockitoSpyBean`)
+- `@Scheduled` cron, `NOT EXISTS` 서브쿼리로 "어디에도 쓰이지 않음" 판단
+
+**결정 (Claude가 추천안으로 정함)**
+| 결정 | 이유 |
+| --- | --- |
+| 발급 기록 테이블 + 참조 여부로 정리 | 업로드 완료 여부를 서버가 알 수 없어도, "쓰이는지"만 보면 됨. 썸네일 교체·글 삭제로 나중에 버려진 파일도 함께 정리 |
+| 24시간 유예 | 글을 오래 쓰는 중인 이미지를 지우지 않게 |
+| 파일 이름은 서버가 UUID로 | 덮어쓰기·경로 조작 방지, 이름 충돌 없음 |
+| 삭제 API 없음 | 프론트가 지우던 방식(실패하면 파일이 남음)을 서버 정리로 일원화 |
+| 기존 Supabase 이미지는 기록하지 않음 | 7단계에서 옮긴 파일이 정리 대상이 되지 않도록 |
+| 로컬은 S3Mock | MinIO 공식 이미지 배포 중단. LocalStack보다 가볍고 CORS·공개 읽기가 됨 |
+| 파일 크기 제한은 프론트 압축에 의존 | Presigned PUT은 크기를 강제할 수 없음 (POST 정책 방식이 대안, 필요하면 6단계 이후) |
+
+**운영(6단계)에서 할 일**: S3 버킷 생성, 공개 읽기(버킷 정책 또는 CloudFront), CORS에 `https://www.wondang.xyz` PUT 허용, 서버 IAM 역할에 `s3:PutObject`·`s3:DeleteObject`
+
+---
+
 ## 2026-11-23 · 3단계: 평가·프로필
 
 브랜치: `feat/rating-profile` → main

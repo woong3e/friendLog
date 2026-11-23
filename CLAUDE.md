@@ -16,6 +16,7 @@ docs/       설계(design/)와 학습 기록(study/)
 - DB 스키마는 `server/src/main/resources/db/migration/` 의 Flyway SQL로만 바꾼다. 적용된 파일은 수정하지 않고 새 버전을 추가한다 (`ddl-auto: validate`)
 - 이 Mac에는 별도 설치된 MySQL이 3306을 쓰고 있어서 컨테이너는 3307로 연다
 - 로컬에서 서버가 보낸 메일(가입 인증 코드)은 Mailpit에서 확인: http://localhost:8025
+- 로컬 이미지 저장소는 S3Mock (`adobe/s3mock`, http://localhost:9090/friendlog/...). MinIO는 공식 이미지 배포가 중단되어 쓰지 않음
 - 서버 테스트: `cd server && ./gradlew test` (Testcontainers가 MySQL을 따로 띄움, OrbStack 실행 필요)
 
 ## 고도화 목표
